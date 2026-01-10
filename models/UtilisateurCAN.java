@@ -1,5 +1,60 @@
 package models;
 
 public abstract class UtilisateurCAN {
+    protected int id;
+    protected String nom;
+    protected String categorie;
+    protected Badge badge;
+
+    private static int compteur = 0;
+
+    public UtilisateurCAN(String nom, String categorie) {
+        this.id = ++compteur;
+        this.nom = nom;
+        this.categorie = categorie;
+    }
+
+    public abstract int getNiveauAcces();
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getCategorie() {
+        return categorie;
+    }
+
+    public void setCategorie(String categorie) {
+        this.categorie = categorie;
+    }
+
+    public static int getCompteur() {
+        return compteur;
+    }
+
+    public static void setCompteur(int compteur) {
+        UtilisateurCAN.compteur = compteur;
+    }
+
+    public Badge getBadge() {
+        return badge;
+    }
+
+    public void setBadge(Badge badge) {
+        this.badge = badge;
+    }
+
     
 }
