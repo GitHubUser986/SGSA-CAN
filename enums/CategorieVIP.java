@@ -1,0 +1,11 @@
+package enums;
+
+public enum CategorieVIP {
+    PRESIDENTIEL,
+    DELEGATION_OFFICIELLE,
+    SPONSORS,
+    FIFA_CAF,
+    AMBASSADEURS,
+    CELEBRITY,
+    PRESSE_INTERNATIONALE
+}
