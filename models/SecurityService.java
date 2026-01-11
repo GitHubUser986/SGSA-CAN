@@ -8,6 +8,7 @@ import java.util.Comparator;
 import enums.Statut;
 import exceptions.BadgeInvalideException;
 import exceptions.DonneeInvalideException;
+import exceptions.UnauthorizedException;
 import exceptions.ZoneInterditeException;
 
 public class SecurityService{
@@ -212,5 +213,66 @@ public class SecurityService{
             throw exception;
         }
         
+    }
+
+    // bloquer Badge
+    public void bloquerBadge(int numeroBadge, Staff admin) throws UnauthorizedException, BadgeInvalideException {
+        Badge badge;
+        badge = rechercherParBadge(numeroBadge);
+
+        if(badge.getStatut() == Statut.BLOQUE) {
+            System.out.println("Cet utilisateur est déjà bloqué");
+        } else {
+            badge.setStatut(Statut.BLOQUE);
+        }
+
+        if(!(admin instanceof Staff)){
+            UnauthorizedException exception = new UnauthorizedException();
+            exception.staffOnly();
+            throw exception;
+        }
+    }
+
+    // débloquer badge
+    public void debloquerBadge(int numeroBadge, Staff admin) throws UnauthorizedException, BadgeInvalideException {
+        Badge badge;
+        badge = rechercherParBadge(numeroBadge);
+
+        if(badge.getStatut() == Statut.BLOQUE) {
+            badge.setStatut(Statut.ACTIF);
+        } else {
+            System.out.println("Cet utilisateur est déjà débloqué");
+        }
+
+        if(!(admin instanceof Staff)){
+            UnauthorizedException exception = new UnauthorizedException();
+            exception.staffOnly();
+            throw exception;
+        }
+    }
+
+    // vérifier la validité de badge
+    public void verifierValiditeBadge(Badge badge) throws BadgeInvalideException {
+        if(badge == null ){
+            BadgeInvalideException exception = new BadgeInvalideException();
+            exception.badgeInexistent();
+            throw exception;
+        }
+
+        LocalDate dateFine = badge.getDateFin();
+        LocalDate currenDate = LocalDate.now();
+        Statut statut = badge.getStatut();
+
+        if(currenDate.isAfter(dateFine)) {
+            if(statut == Statut.ACTIF) {
+                System.out.println("Le badge est actif");
+            } else if(statut == Statut.BLOQUE) {
+                System.out.println("Le badge est bloqué");
+            } else {
+                System.out.println("Le badge est inactif");
+            }
+        } else {
+            System.out.println("Le badge est expiré");
+        }
     }
 }
