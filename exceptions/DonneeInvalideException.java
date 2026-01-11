@@ -2,6 +2,7 @@ package exceptions;
 
 public class DonneeInvalideException extends Exception {
 
+
     public void nomvide() {
         System.out.println("Nom est vide");
     }
@@ -12,6 +13,10 @@ public class DonneeInvalideException extends Exception {
 
     public void dateInvalide() {
         System.out.println("Date invalide");
+    }
+
+    public void listeVide() {
+        System.out.println("La liste est vide");
     }
     
 }

@@ -62,6 +62,19 @@ public class ZoneSecurisee implements Securisable{
         ZoneSecurisee.compteur = compteur;
     }
 
+    public String getDescriptionNiveauRequis(int niveauRequis) {
+        switch (niveauRequis) {
+            case 1 :
+                return "Niveau requis : Spectateur";
+            case 2 :
+                return "Niveau requis : Staff";
+            case 3 :
+                return "Niveau requis : VIP";
+            default :
+                return "Niveau inconnu";
+        }
+    }
+
 
     
 }
