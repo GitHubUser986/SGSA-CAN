@@ -2,13 +2,14 @@ package models;
 
 import java.time.LocalDate;
 
+import enums.Statut;
 import interfaces.Accreditable;
 
 public class Badge implements Accreditable{
     private int numeroBadge;
     private LocalDate dateDebut;
     private LocalDate dateFin;
-    private boolean statut;
+    private Statut statut;
     private UtilisateurCAN utilisateur;
 
     private static int compteur = 0;
@@ -18,7 +19,7 @@ public class Badge implements Accreditable{
         this.utilisateur = utilisateur;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
-        this.statut = true;
+        this.statut = Statut.ACTIF;
     }
 
     @Override
@@ -62,11 +63,11 @@ public class Badge implements Accreditable{
         this.dateFin = dateFin;
     }
 
-    public boolean isStatut() {
+    public Statut getStatut() {
         return statut;
     }
 
-    public void setStatut(boolean statut) {
+    public void setStatut(Statut statut) {
         this.statut = statut;
     }
 

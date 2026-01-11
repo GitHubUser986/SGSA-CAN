@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import enums.Statut;
 import exceptions.BadgeInvalideException;
 import exceptions.DonneeInvalideException;
 import exceptions.ZoneInterditeException;
@@ -196,8 +197,20 @@ public class SecurityService{
     public void invaliderBadge(int numeroBadge) throws BadgeInvalideException{
         Badge badge;
         LocalDate dateFinBadge;
-        badge = rechercherParBadge(numeroBadge);
-        
+        LocalDate currenDate = LocalDate.now();
 
+        badge = rechercherParBadge(numeroBadge);
+        dateFinBadge = badge.getDateFin();
+
+        if(dateFinBadge.isAfter(currenDate)) {
+            badge.setStatut(Statut.EXPIRE);
+        }
+
+        if(badge.getStatut().equals(Statut.EXPIRE)) {
+            BadgeInvalideException exception = new BadgeInvalideException();
+            exception.badgeExpire();
+            throw exception;
+        }
+        
     }
 }
