@@ -14,6 +14,16 @@ public abstract class UtilisateurCAN {
         this.categorie = categorie;
     }
 
+
+    @Override
+    public String toString(){
+        return "ID: " + id + "\n" +
+               "Nom: "+ nom + "\n" +
+               "Categorie: " + "\n" +
+               "Niveau: " + getNiveauAcces() +
+               "Badge: " + (badge != null ? badge.getNumeroBadge() : "Aucun") + "\n";
+    }
+
     public abstract int getNiveauAcces();
 
     public int getId() {

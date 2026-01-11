@@ -3,6 +3,10 @@ package models;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 
 import exceptions.DonneeInvalideException;
 import exceptions.ZoneInterditeException;
@@ -20,6 +24,9 @@ public class SecurityService{
         this.accesLog = new ArrayList<>();
     }
 
+    /************************************* Users Managment *************************************/
+
+    //L'ajout d'un utilisateur
     public void ajouterUtilisateur(UtilisateurCAN utilisateur) throws DonneeInvalideException{
         if (utilisateur == null){
             throw new DonneeInvalideException();
@@ -31,6 +38,92 @@ public class SecurityService{
         utilisateurs.add(utilisateur);
         System.out.println("Utilisateur ajouté!");
     }
+
+    //La recherche par nom
+    public UtilisateurCAN rechercherParNom(String nom){
+        if(nom == null || nom.trim().isEmpty()){
+            return null;
+        }
+        String nomChercher = nom.toLowerCase();
+        for (UtilisateurCAN utilisateur : utilisateurs){
+            if(utilisateur.getNom().toLowerCase().contains(nomChercher)){
+                System.out.println("utilisateur trouvé: \n");
+                return utilisateur;
+            }
+        }
+        System.out.println("L'utilisateur" + nom + " est introuvable");
+        return null;
+    }
+
+    //La recherche par ID
+    public UtilisateurCAN rechercherPadId(int id){
+        for(UtilisateurCAN utilisateur : utilisateurs){
+            if(utilisateur.getId() == id){
+                System.out.println("utilisateur trouvé \n");
+                return utilisateur;
+            }
+        }
+        System.out.println("Utilisateur introuvable");
+        return null;
+    }
+
+    //La liste des utilisateurs
+    public void listerUtilisateurs(){
+        if(utilisateurs.isEmpty()){
+            System.out.println("Aucun utilisateur enregistré");
+        }
+        System.out.println("==========Liste Des Utilisateurs==========");
+        for(UtilisateurCAN utilisateur : utilisateurs){
+            System.out.println(utilisateur);
+        }
+    }
+
+    //Le tri des utilisateur
+    public void trierUtilisateurParNom(){
+        Collections.sort(utilisateurs, new Comparator<UtilisateurCAN>() {
+            @Override
+            public int compare(UtilisateurCAN u1, UtilisateurCAN u2){
+                return u1.getNom().compareToIgnoreCase(u2.getNom());
+            }
+        });
+    }
+
+    //Compter les utilisateurs par type
+    public void compterUtilisateurParType(){
+        int spectateur = 0;
+        int staff = 0;
+        int vip = 0;
+
+        for (UtilisateurCAN utilisateur : utilisateurs){
+            if (utilisateur instanceof Spectateur){
+                spectateur++;
+            }else if (utilisateur instanceof Staff){
+                staff++;
+            }else if (utilisateur instanceof VIP){
+                vip++;
+            }
+        }
+
+        System.out.println("Les Spectateur : " + spectateur);
+        System.out.println("Les Staff : " + staff);
+        System.out.println("Les VIP : " + vip);
+    }
+
+
+    // public Map<String, Integer> compterUtilisateurParType(){
+    //     Map<String, Integer> compteur = new HashMap<>();
+    //     compteur.put("Spectateur", 0);
+    //     compteur.put("Staff", 0);
+    //     compteur.put("VIP", 0);
+
+    //     for (UtilisateurCAN utilisateur : utilisateurs){
+    //         String type = utilisateur.getClass().getSimpleName();
+    //         compteur.put(type, compteur.getOrDefault(type,0 )+1);
+    //     }
+    //     return compteur;
+    // }
+
+    /************************************* Zones Managment *************************************/
 
     public void ajouterZone(ZoneSecurisee zone) throws DonneeInvalideException {
 
