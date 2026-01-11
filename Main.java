@@ -72,11 +72,11 @@ public class Main {
             // 1. Ajouter des zones
             System.out.println("\n--- Ajout de zones sécurisées ---");
             
-            ZoneSecurisee z1 = new ZoneSecurisee(1, "Entrée Générale", 1);
-            ZoneSecurisee z2 = new ZoneSecurisee(2, "Tribune VIP", 3);
-            ZoneSecurisee z3 = new ZoneSecurisee(3, "Zone Presse", 2);
-            ZoneSecurisee z4 = new ZoneSecurisee(4, "Vestiaires", 2);
-            ZoneSecurisee z5 = new ZoneSecurisee(5, "Salle de Contrôle", 3);
+            ZoneSecurisee z1 = new ZoneSecurisee("Entrée Générale", 1);
+            ZoneSecurisee z2 = new ZoneSecurisee("Tribune VIP", 3);
+            ZoneSecurisee z3 = new ZoneSecurisee("Zone Presse", 2);
+            ZoneSecurisee z4 = new ZoneSecurisee("Vestiaires", 2);
+            ZoneSecurisee z5 = new ZoneSecurisee("Salle de Contrôle", 3);
             
             service.ajouterZone(z1);
             service.ajouterZone(z2);
