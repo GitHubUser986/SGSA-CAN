@@ -34,78 +34,48 @@ public class SecurityService{
 
     public void ajouterZone(ZoneSecurisee zone) throws DonneeInvalideException {
 
-        try {
-            if(zone.getNomZone().equals(null) || zone == null) {
-                throw new DonneeInvalideException();
-            }
-
-            Zones.add(zone);
-            System.out.println("Zone est ajoutée avec succès");
-            
-        } catch (DonneeInvalideException e) {
-            // TODO: handle exception
-            e.nomvide();
+        if(zone.getNomZone().equals(null) || zone == null) {
+            throw new DonneeInvalideException();
         }
-        
+
+        Zones.add(zone);
+        System.out.println("Zone est ajoutée avec succès");
+
     }
 
     public ZoneSecurisee rechercherZone(String nom) throws ZoneInterditeException {
-        try {
-            for (ZoneSecurisee zoneSecurisee : Zones) {
-                if(zoneSecurisee.getNomZone().equals(nom)) {
-                    return zoneSecurisee;
-                }
+        for (ZoneSecurisee zoneSecurisee : Zones) {
+            if(zoneSecurisee.getNomZone().equals(nom)) {
+                return zoneSecurisee;
             }
-            throw new ZoneInterditeException();
-        } catch (ZoneInterditeException e) {
-            // TODO: handle exception
-            e.zoneInexistante();
-            return null;
         }
+        throw new ZoneInterditeException();
+        
     }
 
     public ZoneSecurisee rechercherZoneParId(int idZone) throws ZoneInterditeException {
-        try {
-            for (ZoneSecurisee zoneSecurisee : Zones) {
-                if(zoneSecurisee.getIdZone() == idZone) {
-                    return zoneSecurisee;
-                }
+        for (ZoneSecurisee zoneSecurisee : Zones) {
+            if(zoneSecurisee.getIdZone() == idZone) {
+                return zoneSecurisee;
             }
-            throw new ZoneInterditeException();
-        } catch (ZoneInterditeException e) {
-            // TODO: handle exception
-            e.zoneInexistante();
-            return null;
         }
+        throw new ZoneInterditeException();
     }
 
     public ArrayList<ZoneSecurisee> listerZones() throws DonneeInvalideException{
-
-        try {
-            if(Zones.size() == 0) {
-                throw new DonneeInvalideException();
-            }
-            return Zones;
-        } catch (DonneeInvalideException e) {
-            // TODO: handle exception
-            e.listeVide();
-            return null;
+        if(Zones.size() == 0) {
+            throw new DonneeInvalideException();
         }
+        return Zones;
     }
 
     public ArrayList<ZoneSecurisee> trierZonesParNiveau() throws DonneeInvalideException {
-        try {
-            if(Zones == null || Zones.isEmpty()) {
-                throw new DonneeInvalideException();
-            }
-            ArrayList<ZoneSecurisee> zonesTriees = new ArrayList<>(Zones);
-            zonesTriees.sort((zone1, zone2) -> Integer.compare(zone1.getNiveauRequis(), zone2.getNiveauRequis()));
-            return zonesTriees;
-            
-        } catch (DonneeInvalideException e) {
-            // TODO: handle exception
-            e.listeVide();
-            return null;
+        if(Zones == null || Zones.isEmpty()) {
+            throw new DonneeInvalideException();
         }
+        ArrayList<ZoneSecurisee> zonesTriees = new ArrayList<>(Zones);
+        zonesTriees.sort((zone1, zone2) -> Integer.compare(zone1.getNiveauRequis(), zone2.getNiveauRequis()));
+        return zonesTriees;
+
     }
 }
