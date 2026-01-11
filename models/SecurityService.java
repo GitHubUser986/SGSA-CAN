@@ -1,25 +1,23 @@
 package models;
 
-import java.lang.reflect.Array;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 
+import exceptions.BadgeInvalideException;
 import exceptions.DonneeInvalideException;
 import exceptions.ZoneInterditeException;
 
 public class SecurityService{
     private ArrayList<UtilisateurCAN> utilisateurs;
-    private ArrayList<Badge> badges;
+    private ArrayList<Badge> Badges;
     private ArrayList<ZoneSecurisee> Zones;
     private ArrayList<AccesLog> accesLog;
 
     public SecurityService(){
         this.utilisateurs = new ArrayList<>();
-        this.badges = new ArrayList<>();
+        this.Badges = new ArrayList<>();
         this.Zones = new ArrayList<>();
         this.accesLog = new ArrayList<>();
     }
@@ -167,6 +165,39 @@ public class SecurityService{
         ArrayList<ZoneSecurisee> zonesTriees = new ArrayList<>(Zones);
         zonesTriees.sort((zone1, zone2) -> Integer.compare(zone1.getNiveauRequis(), zone2.getNiveauRequis()));
         return zonesTriees;
+
+    }
+
+    // Générer un badge
+    public Badge genererBadge(UtilisateurCAN user, LocalDate debut, LocalDate fin) throws DonneeInvalideException {
+        if(debut == null || fin == null) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.dateInvalide();
+            throw exception;
+        }
+        Badge badge = new Badge(user, debut, fin);
+        return badge;
+    }
+
+    // Rechercher par numero de badge
+    public Badge rechercherParBadge(int numeroBadge) throws BadgeInvalideException {
+        for (Badge badge : Badges) {
+            if(badge.getNumeroBadge() == numeroBadge) {
+                return badge;
+            }
+        }
+        BadgeInvalideException exception = new BadgeInvalideException();
+        exception.badgeInexistent();
+        throw exception;
+
+    }
+
+    // invalider un badge
+    public void invaliderBadge(int numeroBadge) throws BadgeInvalideException{
+        Badge badge;
+        LocalDate dateFinBadge;
+        badge = rechercherParBadge(numeroBadge);
+        
 
     }
 }

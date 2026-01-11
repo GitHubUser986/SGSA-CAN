@@ -13,7 +13,7 @@ public class Badge implements Accreditable{
 
     private static int compteur = 0;
 
-    public Badge(UtilisateurCAN utilisateur, LocalDate dateDebut, LocalDate dateFin, boolean statut){
+    public Badge(UtilisateurCAN utilisateur, LocalDate dateDebut, LocalDate dateFin){
         this.numeroBadge = ++compteur;
         this.utilisateur = utilisateur;
         this.dateDebut = dateDebut;
