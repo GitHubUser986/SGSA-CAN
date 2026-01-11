@@ -118,6 +118,7 @@ public class SecurityService{
 
     /************************************* Zones Managment *************************************/
 
+    // ajouter zone
     public void ajouterZone(ZoneSecurisee zone) throws DonneeInvalideException {
 
         if(zone.getNomZone().equals(null) || zone == null) {
@@ -129,6 +130,7 @@ public class SecurityService{
 
     }
 
+    // rechercher zone par nom
     public ZoneSecurisee rechercherZone(String nom) throws ZoneInterditeException {
         for (ZoneSecurisee zoneSecurisee : Zones) {
             if(zoneSecurisee.getNomZone().equals(nom)) {
@@ -139,6 +141,7 @@ public class SecurityService{
         
     }
 
+    // rechercher zone par id
     public ZoneSecurisee rechercherZoneParId(int idZone) throws ZoneInterditeException {
         for (ZoneSecurisee zoneSecurisee : Zones) {
             if(zoneSecurisee.getIdZone() == idZone) {
@@ -148,6 +151,7 @@ public class SecurityService{
         throw new ZoneInterditeException();
     }
 
+    // lister les zones
     public ArrayList<ZoneSecurisee> listerZones() throws DonneeInvalideException{
         if(Zones.size() == 0) {
             throw new DonneeInvalideException();
@@ -155,6 +159,7 @@ public class SecurityService{
         return Zones;
     }
 
+    // trier la liste des zones par niveau
     public ArrayList<ZoneSecurisee> trierZonesParNiveau() throws DonneeInvalideException {
         if(Zones == null || Zones.isEmpty()) {
             throw new DonneeInvalideException();
