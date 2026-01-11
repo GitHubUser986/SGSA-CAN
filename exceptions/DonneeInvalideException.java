@@ -7,6 +7,10 @@ public class DonneeInvalideException extends Exception {
         System.out.println("Nom est vide");
     }
 
+    public void utilisateurNull() {
+        System.out.println("L'utilisateur est null");
+    }
+
     public void categorieInconnu() {
         System.out.println("Catégorie inconnue");
     }

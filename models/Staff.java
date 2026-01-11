@@ -1,9 +1,11 @@
 package models;
 
+import enums.CategorieStaff;
+
 public class Staff extends UtilisateurCAN{
 
-    public Staff ( String nom, String categorie){
-        super( nom, "Staff");
+    public Staff ( String nom, CategorieStaff categorie){
+        super( nom, categorie.name());
     }
 
     @Override

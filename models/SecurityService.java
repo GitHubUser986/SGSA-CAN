@@ -29,11 +29,15 @@ public class SecurityService{
     //L'ajout d'un utilisateur
     public void ajouterUtilisateur(UtilisateurCAN utilisateur) throws DonneeInvalideException{
         if (utilisateur == null){
-            throw new DonneeInvalideException();
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.utilisateurNull();
+            throw exception;
         }
 
         if (utilisateur.getNom() == null || utilisateur.getNom().trim().isEmpty()){
-            throw new DonneeInvalideException();
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomvide();
+            throw exception;
         }
         utilisateurs.add(utilisateur);
         System.out.println("Utilisateur ajouté!");
@@ -48,6 +52,7 @@ public class SecurityService{
         for (UtilisateurCAN utilisateur : utilisateurs){
             if(utilisateur.getNom().toLowerCase().contains(nomChercher)){
                 System.out.println("utilisateur trouvé: \n");
+                System.out.println(utilisateur);
                 return utilisateur;
             }
         }
@@ -60,6 +65,7 @@ public class SecurityService{
         for(UtilisateurCAN utilisateur : utilisateurs){
             if(utilisateur.getId() == id){
                 System.out.println("utilisateur trouvé \n");
+                System.out.println(utilisateur);
                 return utilisateur;
             }
         }
@@ -109,19 +115,6 @@ public class SecurityService{
         System.out.println("Les VIP : " + vip);
     }
 
-
-    // public Map<String, Integer> compterUtilisateurParType(){
-    //     Map<String, Integer> compteur = new HashMap<>();
-    //     compteur.put("Spectateur", 0);
-    //     compteur.put("Staff", 0);
-    //     compteur.put("VIP", 0);
-
-    //     for (UtilisateurCAN utilisateur : utilisateurs){
-    //         String type = utilisateur.getClass().getSimpleName();
-    //         compteur.put(type, compteur.getOrDefault(type,0 )+1);
-    //     }
-    //     return compteur;
-    // }
 
     /************************************* Zones Managment *************************************/
 

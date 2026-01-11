@@ -11,7 +11,7 @@ public class ZoneSecurisee implements Securisable{
 
     //*********sould we add an array for the authorized users!! 
 
-    public ZoneSecurisee(int idZone, String nomZone, int niveauRequis){
+    public ZoneSecurisee(String nomZone, int niveauRequis){
         this.idZone = ++compteur;
         this.nomZone = nomZone;
         this.niveauRequis = niveauRequis;
@@ -28,6 +28,13 @@ public class ZoneSecurisee implements Securisable{
     @Override
     public boolean verifierAcces(ZoneSecurisee zone, UtilisateurCAN utilisateur) {
         return true;
+    }
+
+    @Override
+    public String toString(){
+        return "ID : " + idZone + "\n" +
+               "Nom : " + nomZone + "\n" +
+               "Niveau : " + niveauRequis + "\n";
     }
 
     public int getIdZone() {

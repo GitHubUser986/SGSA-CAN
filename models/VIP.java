@@ -1,9 +1,11 @@
 package models;
 
+import enums.CategorieVIP;
+
 public class VIP extends UtilisateurCAN{
     
-    public VIP( String nom, String categorie){
-        super(nom, "VIP");
+    public VIP( String nom, CategorieVIP categorie){
+        super(nom, categorie.name());
     }
 
     @Override
