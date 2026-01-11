@@ -122,7 +122,9 @@ public class SecurityService{
     public void ajouterZone(ZoneSecurisee zone) throws DonneeInvalideException {
 
         if(zone.getNomZone().equals(null) || zone == null) {
-            throw new DonneeInvalideException();
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomvide();
+            throw exception;
         }
 
         Zones.add(zone);
@@ -137,7 +139,9 @@ public class SecurityService{
                 return zoneSecurisee;
             }
         }
-        throw new ZoneInterditeException();
+        ZoneInterditeException exception = new ZoneInterditeException();
+        exception.zoneInexistante();
+        throw exception;
         
     }
 
@@ -148,13 +152,17 @@ public class SecurityService{
                 return zoneSecurisee;
             }
         }
-        throw new ZoneInterditeException();
+        ZoneInterditeException exception = new ZoneInterditeException();
+        exception.zoneInexistante();
+        throw exception;
     }
 
     // lister les zones
     public ArrayList<ZoneSecurisee> listerZones() throws DonneeInvalideException{
-        if(Zones.size() == 0) {
-            throw new DonneeInvalideException();
+        if(Zones.isEmpty()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
         }
         return Zones;
     }
@@ -162,7 +170,9 @@ public class SecurityService{
     // trier la liste des zones par niveau
     public ArrayList<ZoneSecurisee> trierZonesParNiveau() throws DonneeInvalideException {
         if(Zones == null || Zones.isEmpty()) {
-            throw new DonneeInvalideException();
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
         }
         ArrayList<ZoneSecurisee> zonesTriees = new ArrayList<>(Zones);
         zonesTriees.sort((zone1, zone2) -> Integer.compare(zone1.getNiveauRequis(), zone2.getNiveauRequis()));
