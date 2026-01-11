@@ -275,4 +275,68 @@ public class SecurityService{
             System.out.println("Le badge est expiré");
         }
     }
+
+    public ArrayList<Badge> listerBadgesActifs() throws DonneeInvalideException{
+        if(Badges.isEmpty()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
+        }
+        ArrayList<Badge> badgesActifs = new ArrayList<Badge>();
+
+        for (Badge badge : Badges) {
+            if(badge.getStatut() == Statut.ACTIF) {
+                badgesActifs.add(badge);
+            }
+        }
+
+        if (badgesActifs.isEmpty()) {
+            System.out.println("Aucun badge est actif");
+        }
+
+        return badgesActifs;
+    }
+
+    public ArrayList<Badge> listerBadgesBloques() throws DonneeInvalideException{
+        if(Badges.isEmpty()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
+        }
+
+        ArrayList<Badge> badgesBloques = new ArrayList<Badge>();
+
+        for (Badge badge : Badges) {
+            if(badge.getStatut() == Statut.BLOQUE) {
+                badgesBloques.add(badge);
+            }
+        }
+
+        if(badgesBloques.isEmpty()){
+            System.out.println("Aucun badge est bloqué");
+        }
+
+        return badgesBloques;
+    }
+
+    public ArrayList<Badge> listerBadgesExpires() throws DonneeInvalideException{
+        if(Badges.isEmpty()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
+        }
+
+        ArrayList<Badge> badgesExpires = new ArrayList<>();
+        for (Badge badge : Badges) {
+            if(badge.getStatut() == Statut.EXPIRE) {
+                badgesExpires.add(badge);
+            }
+        }
+
+        if (badgesExpires.isEmpty()) {
+            System.out.println("Aucun badge est expiré");
+        }
+        
+        return badgesExpires;
+    }
 }
