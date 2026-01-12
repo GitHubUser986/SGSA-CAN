@@ -411,7 +411,9 @@ public class SecurityService {
         System.out.println(" • Niveau utilisateur : " + utilisateur.getNiveauAcces());
         System.out.println(" • Niveau requis : " + zone.getNiveauRequis());
 
-        enregistrerAccec(badge, zone, "OK");
+        String raison = "";
+
+        enregistrerAcces(badge, zone, "Autorisé", raison);
     };
 
     public void refuserAcces(Badge badge, ZoneSecurisee zone, String raison) {
@@ -429,14 +431,13 @@ public class SecurityService {
         }
 
         System.out.println(" • Raison : " + raison);
-
-        if (zone != null) {
-            enregistrerAccec(badge, zone, raison);
+        if (zone != null){
+            enregistrerAcces(badge, zone,"Refus" ,raison);
         }
-    };
+    }
 
-    public void enregistrerAccec(Badge badge, ZoneSecurisee zone, String resultat) {
-        AccesLog log = new AccesLog(badge, zone, resultat);
+    public void enregistrerAcces(Badge badge, ZoneSecurisee zone, String resultat, String raison) {
+        AccesLog log = new AccesLog(badge, zone, resultat, raison);
         accesLog.add(log);
     };
 
@@ -472,7 +473,7 @@ public class SecurityService {
 
                 int refus = 0;
                 for (AccesLog log : accesLog) {
-                    if (!log.getResultat().equalsIgnoreCase("ok")) {
+                    if (log.getResultat().equalsIgnoreCase("refus")) {
                         if (log.getZone() != null && log.getZone().getNomZone().equals(zone.getNomZone())) {
                             refus++;
                         }
@@ -529,19 +530,19 @@ public class SecurityService {
     }
 
     // Affichage des Statistiques d'utilisateurs
-    public void afficherStatistiquesUtilisateurs(){
+    public void afficherStatistiquesUtilisateurs() {
 
-        for(UtilisateurCAN utilisateur : utilisateurs){
+        for (UtilisateurCAN utilisateur : utilisateurs) {
             int total = 0;
             int refus = 0;
             int succes = 0;
 
-            for(AccesLog log : accesLog){
-                if(log.getBadge().getUtilisateur().equals(utilisateur)){
+            for (AccesLog log : accesLog) {
+                if (log.getBadge().getUtilisateur().equals(utilisateur)) {
                     total++;
-                    if (!log.getResultat().equalsIgnoreCase("ok")){
+                    if (log.getResultat().equalsIgnoreCase("refus")) {
                         refus++;
-                    }else{
+                    } else {
                         succes++;
                     }
                 }
@@ -554,20 +555,19 @@ public class SecurityService {
         }
     }
 
-
     // Affichages des statistiques des badges
-    public void afficherStatistiquesBadges(){
-        for (Badge badge : badges){
+    public void afficherStatistiquesBadges() {
+        for (Badge badge : badges) {
             int total = 0;
             int refus = 0;
             int succes = 0;
 
-            for(AccesLog log : accesLog){
-                if(log.getBadge().equals(badge)){
+            for (AccesLog log : accesLog) {
+                if (log.getBadge().equals(badge)) {
                     total++;
-                    if(!log.getResultat().equalsIgnoreCase("ok")){
+                    if (log.getResultat().equalsIgnoreCase("refus")) {
                         refus++;
-                    }else{
+                    } else {
                         succes++;
                     }
                 }
@@ -582,53 +582,180 @@ public class SecurityService {
     }
 
     // Generer le rapport
-    public void genererRapportComplet(){
-        
+    public void genererRapportComplet() {
+
         System.out.println("============RAPPORT DE SECURITE COMPLET============");
 
-        //I don't know if we should keep this following block or not!!
+        // I don't know if we should keep this following block or not!!
         System.out.println("\n------ Statistiques générale ------");
         System.out.println("Utilisateurs enregistrés : " + utilisateurs.size());
         System.out.println("Badges générer : " + badges.size());
         System.out.println("Zones sécurisées : " + zones.size());
 
         System.out.println("------ Etat des badges ------");
-        int actif = 0; 
-        int bloques = 0; 
+        int actif = 0;
+        int bloques = 0;
         int expires = 0;
-        for(Badge badge : badges){
+        for (Badge badge : badges) {
             if (badge.getStatut().equals("bloque")) {
                 bloques++;
-            }else if (!badge.estBadgeValide()){
+            } else if (!badge.estBadgeValide()) {
                 expires++;
-            }else{
+            } else {
                 actif++;
             }
         }
-        System.out.println("Badge actifs : " + actif);  
-        System.out.println("Badges bloqués : " + bloques);  
-        System.out.println("Badges expirés : " +expires);  
-    
+        System.out.println("Badge actifs : " + actif);
+        System.out.println("Badges bloqués : " + bloques);
+        System.out.println("Badges expirés : " + expires);
 
         System.out.println("Nombre total d'accès : " + accesLog.size());
         System.out.printf("Taux de refus : %.2f %%\n", calculerTauxRefus());
 
         System.out.println("\n------ Les Zones les plus sensibles ------");
-            for(ZoneSecurisee zone : getZonesPlusSensibles()){
-                System.out.println(" • " + zone.getNomZone());
-            }
+        for (ZoneSecurisee zone : getZonesPlusSensibles()) {
+            System.out.println(" • " + zone.getNomZone());
+        }
 
         System.out.println("\n------ Les badges les plus utilisés ------");
-            for(Badge badge : getBadgesPlusUtilises()){
-                System.out.println(" • Badge N° : " + badge.getNumeroBadge() + " de " + badge.getUtilisateur());
-            }
+        for (Badge badge : getBadgesPlusUtilises()) {
+            System.out.println(" • Badge N° : " + badge.getNumeroBadge() + " de " + badge.getUtilisateur());
+        }
 
         System.out.println("\n------ Les statistiques utilisateurs ------");
         afficherStatistiquesUtilisateurs();
-        
+
         System.out.println("\n------ Les statistiques badges ------");
         afficherStatistiquesBadges();
 
         System.out.println("===================================================");
+    }
+
+    /**************************************
+     * Access History & Logs Methods
+     *************************************/
+    // Liste des logs par zone
+    public ArrayList<AccesLog> rechercherParZone(String nomZone)
+            throws DonneeInvalideException, ZoneInterditeException {
+        if (nomZone == null || nomZone.isEmpty() || nomZone.isBlank()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomvide();
+            throw exception;
+        }
+
+        ZoneSecurisee zone = rechercherZone(nomZone);
+        if (zone == null) {
+            ZoneInterditeException exception = new ZoneInterditeException();
+            exception.zoneInexistante();
+            throw exception;
+        }
+
+        ArrayList<AccesLog> zoneLogs = new ArrayList<AccesLog>();
+        System.out.println("Logs de la zone : " + zone.getNomZone());
+        for (AccesLog aLog : accesLog) {
+            if (aLog.getZone().getNomZone() == nomZone) {
+                zoneLogs.add(aLog);
+
+            }
+        }
+        return zoneLogs;
+    }
+
+    // Liste des logs par user
+    public ArrayList<AccesLog> listerAccesParUtilisateur(int userId) {
+        UtilisateurCAN user = rechercherPadId(userId);
+        ArrayList<AccesLog> userLogs = new ArrayList<AccesLog>();
+
+        System.out.println("Les tentatives de " + user.getNom());
+        for (AccesLog aLog : accesLog) {
+            if (aLog.getBadge().getUtilisateur().getId() == userId) {
+                userLogs.add(aLog);
+            }
+        }
+        return userLogs;
+    }
+
+    // Liste des logs par date
+    public ArrayList<AccesLog> listerAccesParDate(LocalDate date) throws DonneeInvalideException {
+        if (date == null) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.dateInvalide();
+            throw exception;
+        }
+
+        ArrayList<AccesLog> dateLogs = new ArrayList<AccesLog>();
+        System.out.println("Logs de la date : " + date);
+
+        for (AccesLog eLog : accesLog) {
+            if (eLog.getDate().equals(date)) {
+                dateLogs.add(eLog);
+            }
+        }
+        return dateLogs;
+    }
+
+    // Liste des logs par badge
+    public ArrayList<AccesLog> listerAccesParBadge(int numeroBadge) throws BadgeInvalideException {
+        Badge badge = rechercherParBadge(numeroBadge);
+        ArrayList<AccesLog> badgeLogs = new ArrayList<AccesLog>();
+
+        System.out.println("Logs de badge " + numeroBadge);
+        for (AccesLog aLog : accesLog) {
+            if (aLog.getBadge().equals(badge)) {
+                badgeLogs.add(aLog);
+            }
+        }
+        return badgeLogs;
+
+    }
+
+    // Liste des logs
+    public void afficherHistorique() throws DonneeInvalideException {
+        if (accesLog.isEmpty()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
+        }
+
+        System.out.println(
+                "**************************************Historique Complet**************************************");
+        System.out.println("Total : " + accesLog.size());
+        for (AccesLog aLog : accesLog) {
+            System.out.println("Date : " + aLog.getDate());
+            System.out.println("Utilisateur : " + aLog.getBadge().getUtilisateur().getNom());
+            System.out.println("Zone : " + aLog.getZone());
+            System.out.println("Résultat : " + aLog.getResultat());
+            if (aLog.getResultat().equals("Refus")) {
+                System.out.println("Raison : " + aLog.getRaisonRefus());
+            }
+        }
+
+    }
+
+    // Trier Acces par date
+    public void trierAccesParDate() throws DonneeInvalideException {
+        if (accesLog.isEmpty()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
+        }
+
+        accesLog.sort((aLog1, aLog2) -> {
+            int dateCompare = aLog1.getDate().compareTo(aLog2.getDate());
+            if (dateCompare != 0) {
+                return dateCompare;
+            }
+            return aLog1.getTime().compareTo(aLog2.getTime());
+        });
+
+        for (AccesLog aLog : accesLog) {
+            System.out.print("[Date : " + aLog.getDate() + " - " + aLog.getTime() + "] ");
+            System.out.print("Badge : " + aLog.getBadge());
+            System.out.println(" -> Zone : " + aLog.getZone());
+            System.out.println("Résultat : " + aLog.getResultat());
+            if (aLog.getResultat().equals("Refus")) {
+                System.out.println("Raison : " + aLog.getRaisonRefus());
+            }
+        }
     }
 }
