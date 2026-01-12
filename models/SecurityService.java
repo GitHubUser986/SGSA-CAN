@@ -354,4 +354,79 @@ public class SecurityService{
         
         return badgesExpires;
     }
+
+    /************************************** Access Control*************************************/
+    public boolean verfierAcces(int numeroBadge, String nomZone) throws BadgeInvalideException {
+        Badge badge = rechercherParBadge(numeroBadge);
+
+        if (!badge.estBadgeValide()) {
+            String raison = "Badge invalide, expiré ou bloqué";
+            ZoneSecurisee zone = null;
+            try {
+                zone = rechercherZone(nomZone);
+            } catch (ZoneInterditeException e) {
+            }
+            refuserAcces(badge, zone, raison);
+            return false;
+        }
+
+        ZoneSecurisee zone = null;
+        try {
+            zone = rechercherZone(nomZone);
+        } catch (ZoneInterditeException e) {
+            refuserAcces(badge, zone, "Zone inexistante");
+            return false;
+        }
+
+        UtilisateurCAN utilisateur = badge.getUtilisateur();
+        
+        if (utilisateur.getNiveauAcces() < zone.getNiveauRequis()) {
+            String raison = "Niveau d'accès insuffisant (" + utilisateur.getNiveauAcces() + " < "
+                    + zone.getNiveauRequis();
+            refuserAcces(badge, zone, raison);
+            return false;
+        }
+
+        autoriserAcces(badge, zone);
+        return true;
+    }
+
+    public void autoriserAcces(Badge badge, ZoneSecurisee zone) {
+        
+        UtilisateurCAN utilisateur = badge.getUtilisateur();
+
+        System.out.println("Accés Autorisé");
+        System.out.println(" • Utilisateur : " + utilisateur.getNom() + " (ID: " + utilisateur.getId() + " )");
+        System.out.println(" • Badge N° : " + badge.getNumeroBadge());
+        System.out.println(" • Zone : " + zone.getNomZone());
+        System.out.println(" • Niveau utilisateur : " + utilisateur.getNiveauAcces());
+        System.out.println(" • Niveau requis : " + zone.getNiveauRequis());
+
+        enregistrerAccec(badge, zone, "OK");
+    };
+
+    public void refuserAcces(Badge badge, ZoneSecurisee zone, String raison) {
+        UtilisateurCAN utilisateur = badge.getUtilisateur();
+
+        System.out.println("Accés Refusé");
+        System.out.println(" • Utilisateur : " + utilisateur.getNom() + " (ID: " + utilisateur.getId() + " )");
+        System.out.println(" • Badge N° : " + badge.getNumeroBadge());
+
+        if (zone != null) {
+            System.out.println(" • Zone : " + zone.getNomZone());
+            System.out.println(" • Niveau utilisateur : " + utilisateur.getNiveauAcces());
+            System.out.println(" • Niveau requis : " + zone.getNiveauRequis());
+        }
+
+        System.out.println(" • Raison : " + raison);
+
+        if (zone != null){
+            enregistrerAccec(badge, zone, raison);
+        }
+    };
+
+    public void enregistrerAccec(Badge badge, ZoneSecurisee zone, String resultat) {
+        AccesLog log = new AccesLog(badge, zone, resultat);
+        accesLog.add(log);
+    };
 }
