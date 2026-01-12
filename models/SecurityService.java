@@ -11,30 +11,32 @@ import exceptions.DonneeInvalideException;
 import exceptions.UnauthorizedException;
 import exceptions.ZoneInterditeException;
 
-public class SecurityService{
+public class SecurityService {
     private ArrayList<UtilisateurCAN> utilisateurs;
-    private ArrayList<Badge> Badges;
-    private ArrayList<ZoneSecurisee> Zones;
+    private ArrayList<Badge> badges;
+    private ArrayList<ZoneSecurisee> zones;
     private ArrayList<AccesLog> accesLog;
 
-    public SecurityService(){
+    public SecurityService() {
         this.utilisateurs = new ArrayList<>();
-        this.Badges = new ArrayList<>();
-        this.Zones = new ArrayList<>();
+        this.badges = new ArrayList<>();
+        this.zones = new ArrayList<>();
         this.accesLog = new ArrayList<>();
     }
 
-    /************************************* Users Management *************************************/
+    /*************************************
+     * Users Management
+     *************************************/
 
-    //L'ajout d'un utilisateur
-    public void ajouterUtilisateur(UtilisateurCAN utilisateur) throws DonneeInvalideException{
-        if (utilisateur == null){
+    // L'ajout d'un utilisateur
+    public void ajouterUtilisateur(UtilisateurCAN utilisateur) throws DonneeInvalideException {
+        if (utilisateur == null) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.utilisateurNull();
             throw exception;
         }
 
-        if (utilisateur.getNom() == null || utilisateur.getNom().trim().isEmpty()){
+        if (utilisateur.getNom() == null || utilisateur.getNom().trim().isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.nomvide();
             throw exception;
@@ -43,14 +45,14 @@ public class SecurityService{
         System.out.println("Utilisateur ajouté!");
     }
 
-    //La recherche par nom
-    public UtilisateurCAN rechercherParNom(String nom){
-        if(nom == null || nom.trim().isEmpty()){
+    // La recherche par nom
+    public UtilisateurCAN rechercherParNom(String nom) {
+        if (nom == null || nom.trim().isEmpty()) {
             return null;
         }
         String nomChercher = nom.toLowerCase();
-        for (UtilisateurCAN utilisateur : utilisateurs){
-            if(utilisateur.getNom().toLowerCase().contains(nomChercher)){
+        for (UtilisateurCAN utilisateur : utilisateurs) {
+            if (utilisateur.getNom().toLowerCase().contains(nomChercher)) {
                 System.out.println("utilisateur trouvé: \n");
                 System.out.println(utilisateur);
                 return utilisateur;
@@ -60,10 +62,10 @@ public class SecurityService{
         return null;
     }
 
-    //La recherche par ID
-    public UtilisateurCAN rechercherPadId(int id){
-        for(UtilisateurCAN utilisateur : utilisateurs){
-            if(utilisateur.getId() == id){
+    // La recherche par ID
+    public UtilisateurCAN rechercherPadId(int id) {
+        for (UtilisateurCAN utilisateur : utilisateurs) {
+            if (utilisateur.getId() == id) {
                 System.out.println("utilisateur trouvé \n");
                 System.out.println(utilisateur);
                 return utilisateur;
@@ -73,39 +75,39 @@ public class SecurityService{
         return null;
     }
 
-    //La liste des utilisateurs
-    public void listerUtilisateurs(){
-        if(utilisateurs.isEmpty()){
+    // La liste des utilisateurs
+    public void listerUtilisateurs() {
+        if (utilisateurs.isEmpty()) {
             System.out.println("Aucun utilisateur enregistré");
         }
         System.out.println("==========Liste Des Utilisateurs==========");
-        for(UtilisateurCAN utilisateur : utilisateurs){
+        for (UtilisateurCAN utilisateur : utilisateurs) {
             System.out.println(utilisateur);
         }
     }
 
-    //Le tri des utilisateur
-    public void trierUtilisateurParNom(){
+    // Le tri des utilisateur
+    public void trierUtilisateurParNom() {
         Collections.sort(utilisateurs, new Comparator<UtilisateurCAN>() {
             @Override
-            public int compare(UtilisateurCAN u1, UtilisateurCAN u2){
+            public int compare(UtilisateurCAN u1, UtilisateurCAN u2) {
                 return u1.getNom().compareToIgnoreCase(u2.getNom());
             }
         });
     }
 
-    //Compter les utilisateurs par type
-    public void compterUtilisateurParType(){
+    // Compter les utilisateurs par type
+    public void compterUtilisateurParType() {
         int spectateur = 0;
         int staff = 0;
         int vip = 0;
 
-        for (UtilisateurCAN utilisateur : utilisateurs){
-            if (utilisateur instanceof Spectateur){
+        for (UtilisateurCAN utilisateur : utilisateurs) {
+            if (utilisateur instanceof Spectateur) {
                 spectateur++;
-            }else if (utilisateur instanceof Staff){
+            } else if (utilisateur instanceof Staff) {
                 staff++;
-            }else if (utilisateur instanceof VIP){
+            } else if (utilisateur instanceof VIP) {
                 vip++;
             }
         }
@@ -115,40 +117,41 @@ public class SecurityService{
         System.out.println("Les VIP : " + vip);
     }
 
-
-    /************************************* Zones Management *************************************/
+    /*************************************
+     * Zones Management
+     *************************************/
 
     // ajouter zone
     public void ajouterZone(ZoneSecurisee zone) throws DonneeInvalideException {
 
-        if(zone.getNomZone().trim().isEmpty() || zone == null) {
+        if (zone.getNomZone().trim().isEmpty() || zone == null) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.nomvide();
             throw exception;
         }
 
-        Zones.add(zone);
+        zones.add(zone);
         System.out.println("Zone est ajoutée avec succès");
 
     }
 
     // rechercher zone par nom
     public ZoneSecurisee rechercherZone(String nom) throws ZoneInterditeException {
-        for (ZoneSecurisee zoneSecurisee : Zones) {
-            if(zoneSecurisee.getNomZone().equals(nom)) {
+        for (ZoneSecurisee zoneSecurisee : zones) {
+            if (zoneSecurisee.getNomZone().equals(nom)) {
                 return zoneSecurisee;
             }
         }
         ZoneInterditeException exception = new ZoneInterditeException();
         exception.zoneInexistante();
         throw exception;
-        
+
     }
 
     // rechercher zone par id
     public ZoneSecurisee rechercherZoneParId(int idZone) throws ZoneInterditeException {
-        for (ZoneSecurisee zoneSecurisee : Zones) {
-            if(zoneSecurisee.getIdZone() == idZone) {
+        for (ZoneSecurisee zoneSecurisee : zones) {
+            if (zoneSecurisee.getIdZone() == idZone) {
                 return zoneSecurisee;
             }
         }
@@ -158,46 +161,48 @@ public class SecurityService{
     }
 
     // lister les zones
-    public ArrayList<ZoneSecurisee> listerZones() throws DonneeInvalideException{
-        if(Zones.isEmpty()) {
+    public ArrayList<ZoneSecurisee> listerZones() throws DonneeInvalideException {
+        if (zones.isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.listeVide();
             throw exception;
         }
-        return Zones;
+        return zones;
     }
 
     // trier la liste des zones par niveau
     public ArrayList<ZoneSecurisee> trierZonesParNiveau() throws DonneeInvalideException {
-        if(Zones == null || Zones.isEmpty()) {
+        if (zones == null || zones.isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.listeVide();
             throw exception;
         }
-        ArrayList<ZoneSecurisee> zonesTriees = new ArrayList<>(Zones);
+        ArrayList<ZoneSecurisee> zonesTriees = new ArrayList<>(zones);
         zonesTriees.sort((zone1, zone2) -> Integer.compare(zone1.getNiveauRequis(), zone2.getNiveauRequis()));
         return zonesTriees;
 
     }
 
-    /************************************* Badges Management *************************************/
+    /*************************************
+     * Badges Management
+     *************************************/
 
     // Générer un badge
     public Badge genererBadge(UtilisateurCAN user, LocalDate debut, LocalDate fin) throws DonneeInvalideException {
-        if(debut == null || fin == null) {
+        if (debut == null || fin == null) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.dateInvalide();
             throw exception;
         }
         Badge badge = new Badge(user, debut, fin);
-        Badges.add(badge);
+        badges.add(badge);
         return badge;
     }
 
     // Rechercher par numero de badge
     public Badge rechercherParBadge(int numeroBadge) throws BadgeInvalideException {
-        for (Badge badge : Badges) {
-            if(badge.getNumeroBadge() == numeroBadge) {
+        for (Badge badge : badges) {
+            if (badge.getNumeroBadge() == numeroBadge) {
                 return badge;
             }
         }
@@ -208,16 +213,16 @@ public class SecurityService{
     }
 
     // invalider un badge
-    public void invaliderBadge(int numeroBadge) throws BadgeInvalideException{
+    public void invaliderBadge(int numeroBadge) throws BadgeInvalideException {
         Badge badge = rechercherParBadge(numeroBadge);
         LocalDate dateFinBadge = badge.getDateFin();
         LocalDate currentDate = LocalDate.now();
 
-        if(dateFinBadge.isBefore(currentDate)) {
+        if (dateFinBadge.isBefore(currentDate)) {
             badge.setStatut(Statut.EXPIRE);
-        }     
+        }
 
-        if(badge.getStatut().equals(Statut.EXPIRE)) {
+        if (badge.getStatut().equals(Statut.EXPIRE)) {
             BadgeInvalideException exception = new BadgeInvalideException();
             exception.badgeExpire();
             throw exception;
@@ -226,17 +231,18 @@ public class SecurityService{
     }
 
     // bloquer Badge
-    public void bloquerBadge(int numeroBadge, UtilisateurCAN admin) throws UnauthorizedException, BadgeInvalideException {
+    public void bloquerBadge(int numeroBadge, UtilisateurCAN admin)
+            throws UnauthorizedException, BadgeInvalideException {
         Badge badge;
         badge = rechercherParBadge(numeroBadge);
 
-        if(!(admin instanceof Staff)){
+        if (!(admin instanceof Staff)) {
             UnauthorizedException exception = new UnauthorizedException();
             exception.staffOnly();
             throw exception;
         }
 
-        if(badge.getStatut() == Statut.BLOQUE) {
+        if (badge.getStatut() == Statut.BLOQUE) {
             System.out.println("Cet utilisateur est déjà bloqué");
         } else {
             badge.setStatut(Statut.BLOQUE);
@@ -245,17 +251,18 @@ public class SecurityService{
     }
 
     // débloquer badge
-    public void debloquerBadge(int numeroBadge, UtilisateurCAN admin) throws UnauthorizedException, BadgeInvalideException {
+    public void debloquerBadge(int numeroBadge, UtilisateurCAN admin)
+            throws UnauthorizedException, BadgeInvalideException {
         Badge badge;
         badge = rechercherParBadge(numeroBadge);
 
-        if(!(admin instanceof Staff)){
+        if (!(admin instanceof Staff)) {
             UnauthorizedException exception = new UnauthorizedException();
             exception.staffOnly();
             throw exception;
         }
 
-        if(badge.getStatut() == Statut.BLOQUE) {
+        if (badge.getStatut() == Statut.BLOQUE) {
             badge.setStatut(Statut.ACTIF);
             System.out.println("Cet utilisateur est débloqué avec succès");
         } else {
@@ -265,7 +272,7 @@ public class SecurityService{
 
     // vérifier la validité de badge
     public void verifierValiditeBadge(Badge badge) throws BadgeInvalideException {
-        if(badge == null ){
+        if (badge == null) {
             BadgeInvalideException exception = new BadgeInvalideException();
             exception.badgeInexistent();
             throw exception;
@@ -275,10 +282,10 @@ public class SecurityService{
         LocalDate currenDate = LocalDate.now();
         Statut statut = badge.getStatut();
 
-        if(dateFin.isAfter(currenDate)) {
-            if(statut == Statut.ACTIF) {
+        if (dateFin.isAfter(currenDate)) {
+            if (statut == Statut.ACTIF) {
                 System.out.println("Le badge est actif");
-            } else if(statut == Statut.BLOQUE) {
+            } else if (statut == Statut.BLOQUE) {
                 System.out.println("Le badge est bloqué");
             } else {
                 System.out.println("Le badge est inactif");
@@ -288,17 +295,17 @@ public class SecurityService{
         }
     }
 
-    //lister les badges actifs
-    public ArrayList<Badge> listerBadgesActifs() throws DonneeInvalideException{
-        if(Badges.isEmpty()) {
+    // lister les badges actifs
+    public ArrayList<Badge> listerBadgesActifs() throws DonneeInvalideException {
+        if (badges.isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.listeVide();
             throw exception;
         }
         ArrayList<Badge> badgesActifs = new ArrayList<Badge>();
 
-        for (Badge badge : Badges) {
-            if(badge.getStatut() == Statut.ACTIF) {
+        for (Badge badge : badges) {
+            if (badge.getStatut() == Statut.ACTIF) {
                 badgesActifs.add(badge);
             }
         }
@@ -310,9 +317,9 @@ public class SecurityService{
         return badgesActifs;
     }
 
-    //lister les badges bloqués
-    public ArrayList<Badge> listerBadgesBloques() throws DonneeInvalideException{
-        if(Badges.isEmpty()) {
+    // lister les badges bloqués
+    public ArrayList<Badge> listerBadgesBloques() throws DonneeInvalideException {
+        if (badges.isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.listeVide();
             throw exception;
@@ -320,13 +327,13 @@ public class SecurityService{
 
         ArrayList<Badge> badgesBloques = new ArrayList<Badge>();
 
-        for (Badge badge : Badges) {
-            if(badge.getStatut() == Statut.BLOQUE) {
+        for (Badge badge : badges) {
+            if (badge.getStatut() == Statut.BLOQUE) {
                 badgesBloques.add(badge);
             }
         }
 
-        if(badgesBloques.isEmpty()){
+        if (badgesBloques.isEmpty()) {
             System.out.println("Aucun badge est bloqué");
         }
 
@@ -334,16 +341,16 @@ public class SecurityService{
     }
 
     // lister les badges expirés
-    public ArrayList<Badge> listerBadgesExpires() throws DonneeInvalideException{
-        if(Badges.isEmpty()) {
+    public ArrayList<Badge> listerBadgesExpires() throws DonneeInvalideException {
+        if (badges.isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.listeVide();
             throw exception;
         }
 
         ArrayList<Badge> badgesExpires = new ArrayList<>();
-        for (Badge badge : Badges) {
-            if(badge.getStatut() == Statut.EXPIRE) {
+        for (Badge badge : badges) {
+            if (badge.getStatut() == Statut.EXPIRE) {
                 badgesExpires.add(badge);
             }
         }
@@ -351,16 +358,18 @@ public class SecurityService{
         if (badgesExpires.isEmpty()) {
             System.out.println("Aucun badge est expiré");
         }
-        
+
         return badgesExpires;
     }
 
-    /************************************** Access Control*************************************/
+    /**************************************
+     * Access Control
+     *************************************/
     public boolean verfierAcces(int numeroBadge, String nomZone) throws BadgeInvalideException {
         Badge badge = rechercherParBadge(numeroBadge);
 
         if (!badge.estBadgeValide()) {
-            String raison = "Badge invalide, expiré ou bloqué";
+            String raison = "REFUS : Badge invalide, expiré ou bloqué";
             ZoneSecurisee zone = null;
             try {
                 zone = rechercherZone(nomZone);
@@ -379,7 +388,7 @@ public class SecurityService{
         }
 
         UtilisateurCAN utilisateur = badge.getUtilisateur();
-        
+
         if (utilisateur.getNiveauAcces() < zone.getNiveauRequis()) {
             String raison = "Niveau d'accès insuffisant (" + utilisateur.getNiveauAcces() + " < "
                     + zone.getNiveauRequis();
@@ -392,7 +401,7 @@ public class SecurityService{
     }
 
     public void autoriserAcces(Badge badge, ZoneSecurisee zone) {
-        
+
         UtilisateurCAN utilisateur = badge.getUtilisateur();
 
         System.out.println("Accés Autorisé");
@@ -406,6 +415,7 @@ public class SecurityService{
     };
 
     public void refuserAcces(Badge badge, ZoneSecurisee zone, String raison) {
+
         UtilisateurCAN utilisateur = badge.getUtilisateur();
 
         System.out.println("Accés Refusé");
@@ -420,7 +430,7 @@ public class SecurityService{
 
         System.out.println(" • Raison : " + raison);
 
-        if (zone != null){
+        if (zone != null) {
             enregistrerAccec(badge, zone, raison);
         }
     };
@@ -429,4 +439,196 @@ public class SecurityService{
         AccesLog log = new AccesLog(badge, zone, resultat);
         accesLog.add(log);
     };
+
+    /********************************* Rapport************************ */
+
+    // Calcule du teaux de refus
+    public double calculerTauxRefus() {
+        if (accesLog.isEmpty())
+            return 0;
+
+        int refus = 0;
+        for (AccesLog log : accesLog) {
+            if (log.getResultat().equalsIgnoreCase("refus"))
+                refus++;
+        }
+
+        return (double) (refus * 100) / accesLog.size();
+    }
+
+    // Les 3 zones les plus sensible
+    public ArrayList<ZoneSecurisee> getZonesPlusSensibles() {
+
+        ArrayList<ZoneSecurisee> zonesSensibles = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            ZoneSecurisee zoneMax = null;
+            int maxRefus = 0;
+
+            for (ZoneSecurisee zone : zones) {
+                if (zonesSensibles.contains(zone)) {
+                    continue;
+                }
+
+                int refus = 0;
+                for (AccesLog log : accesLog) {
+                    if (!log.getResultat().equalsIgnoreCase("ok")) {
+                        if (log.getZone() != null && log.getZone().getNomZone().equals(zone.getNomZone())) {
+                            refus++;
+                        }
+                    }
+                }
+
+                if (refus > maxRefus) {
+                    maxRefus = refus;
+                    zoneMax = zone;
+                }
+            }
+
+            if (zoneMax != null && maxRefus > 0) {
+                zonesSensibles.add(zoneMax);
+            }
+        }
+
+        return zonesSensibles;
+    }
+
+    public ArrayList<Badge> getBadgesPlusUtilises() {
+
+        ArrayList<Badge> badgesUtilises = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++) {
+            Badge badgesMax = null;
+            int maxUtilisation = 0;
+
+            for (Badge badge : badges) {
+                if (badgesUtilises.contains(badge)) {
+                    continue;
+                }
+
+                int utilisation = 0;
+
+                for (AccesLog log : accesLog) {
+                    if (log.getBadge().getNumeroBadge() == badge.getNumeroBadge()) {
+                        utilisation++;
+                    }
+                }
+
+                if (utilisation > maxUtilisation) {
+                    maxUtilisation = utilisation;
+                    badgesMax = badge;
+                }
+            }
+
+            if (badgesMax != null && maxUtilisation > 0) {
+                badgesUtilises.add(badgesMax);
+            }
+        }
+
+        return badgesUtilises;
+    }
+
+    // Affichage des Statistiques d'utilisateurs
+    public void afficherStatistiquesUtilisateurs(){
+
+        for(UtilisateurCAN utilisateur : utilisateurs){
+            int total = 0;
+            int refus = 0;
+            int succes = 0;
+
+            for(AccesLog log : accesLog){
+                if(log.getBadge().getUtilisateur().equals(utilisateur)){
+                    total++;
+                    if (!log.getResultat().equalsIgnoreCase("ok")){
+                        refus++;
+                    }else{
+                        succes++;
+                    }
+                }
+            }
+
+            System.out.println("Utilisateur : " + utilisateur.getNom());
+            System.out.println(" • Tentatives : " + total);
+            System.out.println(" • Succès : " + succes);
+            System.out.println(" • Refus : " + refus);
+        }
+    }
+
+
+    // Affichages des statistiques des badges
+    public void afficherStatistiquesBadges(){
+        for (Badge badge : badges){
+            int total = 0;
+            int refus = 0;
+            int succes = 0;
+
+            for(AccesLog log : accesLog){
+                if(log.getBadge().equals(badge)){
+                    total++;
+                    if(!log.getResultat().equalsIgnoreCase("ok")){
+                        refus++;
+                    }else{
+                        succes++;
+                    }
+                }
+            }
+
+            System.out.println("Badge N° : " + badge.getNumeroBadge());
+            System.out.println(" • Utilisateur : " + badge.getUtilisateur().getNom());
+            System.out.println(" • Tentatives : " + total);
+            System.out.println(" • Succès : " + succes);
+            System.out.println(" • Refus : " + refus);
+        }
+    }
+
+    // Generer le rapport
+    public void genererRapportComplet(){
+        
+        System.out.println("============RAPPORT DE SECURITE COMPLET============");
+
+        //I don't know if we should keep this following block or not!!
+        System.out.println("\n------ Statistiques générale ------");
+        System.out.println("Utilisateurs enregistrés : " + utilisateurs.size());
+        System.out.println("Badges générer : " + badges.size());
+        System.out.println("Zones sécurisées : " + zones.size());
+
+        System.out.println("------ Etat des badges ------");
+        int actif = 0; 
+        int bloques = 0; 
+        int expires = 0;
+        for(Badge badge : badges){
+            if (badge.getStatut().equals("bloque")) {
+                bloques++;
+            }else if (!badge.estBadgeValide()){
+                expires++;
+            }else{
+                actif++;
+            }
+        }
+        System.out.println("Badge actifs : " + actif);  
+        System.out.println("Badges bloqués : " + bloques);  
+        System.out.println("Badges expirés : " +expires);  
+    
+
+        System.out.println("Nombre total d'accès : " + accesLog.size());
+        System.out.printf("Taux de refus : %.2f %%\n", calculerTauxRefus());
+
+        System.out.println("\n------ Les Zones les plus sensibles ------");
+            for(ZoneSecurisee zone : getZonesPlusSensibles()){
+                System.out.println(" • " + zone.getNomZone());
+            }
+
+        System.out.println("\n------ Les badges les plus utilisés ------");
+            for(Badge badge : getBadgesPlusUtilises()){
+                System.out.println(" • Badge N° : " + badge.getNumeroBadge() + " de " + badge.getUtilisateur());
+            }
+
+        System.out.println("\n------ Les statistiques utilisateurs ------");
+        afficherStatistiquesUtilisateurs();
+        
+        System.out.println("\n------ Les statistiques badges ------");
+        afficherStatistiquesBadges();
+
+        System.out.println("===================================================");
+    }
 }
