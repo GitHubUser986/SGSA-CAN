@@ -2,6 +2,10 @@ package exceptions;
 
 public class ZoneInterditeException extends Exception {
 
+    public ZoneInterditeException() {
+        super();
+    }
+
     public void zoneInexistante(){
         System.out.println("Zone inexistante");
     }

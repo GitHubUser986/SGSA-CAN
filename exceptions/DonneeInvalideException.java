@@ -2,6 +2,9 @@ package exceptions;
 
 public class DonneeInvalideException extends Exception {
 
+    public DonneeInvalideException() {
+        super();
+    }
 
     public void nomvide() {
         System.out.println("Nom est vide");

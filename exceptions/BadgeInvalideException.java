@@ -2,6 +2,10 @@ package exceptions;
 
 public class BadgeInvalideException extends Exception {
 
+    public BadgeInvalideException() {
+       super();
+    }
+
     public void badgeInexistent() {
         System.out.println("Badge introuvable");
     }

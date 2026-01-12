@@ -11,15 +11,21 @@ public class Badge implements Accreditable{
     private LocalDate dateFin;
     private Statut statut;
     private UtilisateurCAN utilisateur;
-
+    
     private static int compteur = 0;
-
+    
     public Badge(UtilisateurCAN utilisateur, LocalDate dateDebut, LocalDate dateFin){
+        LocalDate today = LocalDate.now();
         this.numeroBadge = ++compteur;
         this.utilisateur = utilisateur;
         this.dateDebut = dateDebut;
         this.dateFin = dateFin;
-        this.statut = Statut.ACTIF;
+        if(dateFin.isBefore(today)) {
+            this.statut = Statut.EXPIRE;
+        } else {
+            this.statut = Statut.ACTIF;
+
+        }
     }
 
     @Override

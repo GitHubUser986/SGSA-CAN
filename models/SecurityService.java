@@ -24,7 +24,7 @@ public class SecurityService{
         this.accesLog = new ArrayList<>();
     }
 
-    /************************************* Users Managment *************************************/
+    /************************************* Users Management *************************************/
 
     //L'ajout d'un utilisateur
     public void ajouterUtilisateur(UtilisateurCAN utilisateur) throws DonneeInvalideException{
@@ -116,12 +116,12 @@ public class SecurityService{
     }
 
 
-    /************************************* Zones Managment *************************************/
+    /************************************* Zones Management *************************************/
 
     // ajouter zone
     public void ajouterZone(ZoneSecurisee zone) throws DonneeInvalideException {
 
-        if(zone.getNomZone().equals(null) || zone == null) {
+        if(zone.getNomZone().trim().isEmpty() || zone == null) {
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.nomvide();
             throw exception;
@@ -180,6 +180,8 @@ public class SecurityService{
 
     }
 
+    /************************************* Badges Management *************************************/
+
     // Générer un badge
     public Badge genererBadge(UtilisateurCAN user, LocalDate debut, LocalDate fin) throws DonneeInvalideException {
         if(debut == null || fin == null) {
@@ -188,6 +190,7 @@ public class SecurityService{
             throw exception;
         }
         Badge badge = new Badge(user, debut, fin);
+        Badges.add(badge);
         return badge;
     }
 
@@ -206,23 +209,20 @@ public class SecurityService{
 
     // invalider un badge
     public void invaliderBadge(int numeroBadge) throws BadgeInvalideException{
-        Badge badge;
-        LocalDate dateFinBadge;
-        LocalDate currenDate = LocalDate.now();
+        Badge badge = rechercherParBadge(numeroBadge);
+        LocalDate dateFinBadge = badge.getDateFin();
+        LocalDate currentDate = LocalDate.now();
 
-        badge = rechercherParBadge(numeroBadge);
-        dateFinBadge = badge.getDateFin();
-
-        if(dateFinBadge.isAfter(currenDate)) {
+        if(dateFinBadge.isBefore(currentDate)) {
             badge.setStatut(Statut.EXPIRE);
-        }
+        }     
 
         if(badge.getStatut().equals(Statut.EXPIRE)) {
             BadgeInvalideException exception = new BadgeInvalideException();
             exception.badgeExpire();
             throw exception;
         }
-        
+
     }
 
     // bloquer Badge
@@ -230,16 +230,17 @@ public class SecurityService{
         Badge badge;
         badge = rechercherParBadge(numeroBadge);
 
-        if(badge.getStatut() == Statut.BLOQUE) {
-            System.out.println("Cet utilisateur est déjà bloqué");
-        } else {
-            badge.setStatut(Statut.BLOQUE);
-        }
-
         if(!(admin instanceof Staff)){
             UnauthorizedException exception = new UnauthorizedException();
             exception.staffOnly();
             throw exception;
+        }
+
+        if(badge.getStatut() == Statut.BLOQUE) {
+            System.out.println("Cet utilisateur est déjà bloqué");
+        } else {
+            badge.setStatut(Statut.BLOQUE);
+            System.out.println("Cet utilisateur est bloqué avec succès");
         }
     }
 
@@ -248,16 +249,17 @@ public class SecurityService{
         Badge badge;
         badge = rechercherParBadge(numeroBadge);
 
-        if(badge.getStatut() == Statut.BLOQUE) {
-            badge.setStatut(Statut.ACTIF);
-        } else {
-            System.out.println("Cet utilisateur est déjà débloqué");
-        }
-
         if(!(admin instanceof Staff)){
             UnauthorizedException exception = new UnauthorizedException();
             exception.staffOnly();
             throw exception;
+        }
+
+        if(badge.getStatut() == Statut.BLOQUE) {
+            badge.setStatut(Statut.ACTIF);
+            System.out.println("Cet utilisateur est débloqué avec succès");
+        } else {
+            System.out.println("Cet utilisateur est déjà débloqué");
         }
     }
 
@@ -269,11 +271,11 @@ public class SecurityService{
             throw exception;
         }
 
-        LocalDate dateFine = badge.getDateFin();
+        LocalDate dateFin = badge.getDateFin();
         LocalDate currenDate = LocalDate.now();
         Statut statut = badge.getStatut();
 
-        if(currenDate.isAfter(dateFine)) {
+        if(dateFin.isAfter(currenDate)) {
             if(statut == Statut.ACTIF) {
                 System.out.println("Le badge est actif");
             } else if(statut == Statut.BLOQUE) {
@@ -286,6 +288,7 @@ public class SecurityService{
         }
     }
 
+    //lister les badges actifs
     public ArrayList<Badge> listerBadgesActifs() throws DonneeInvalideException{
         if(Badges.isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
@@ -307,6 +310,7 @@ public class SecurityService{
         return badgesActifs;
     }
 
+    //lister les badges bloqués
     public ArrayList<Badge> listerBadgesBloques() throws DonneeInvalideException{
         if(Badges.isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
@@ -329,6 +333,7 @@ public class SecurityService{
         return badgesBloques;
     }
 
+    // lister les badges expirés
     public ArrayList<Badge> listerBadgesExpires() throws DonneeInvalideException{
         if(Badges.isEmpty()) {
             DonneeInvalideException exception = new DonneeInvalideException();
