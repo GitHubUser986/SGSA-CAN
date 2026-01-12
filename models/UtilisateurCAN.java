@@ -1,14 +1,16 @@
 package models;
 
+import enums.Categorie;
+
 public abstract class UtilisateurCAN {
     protected int id;
     protected String nom;
-    protected String categorie;
+    protected Categorie categorie;
     protected Badge badge;
 
     private static int compteur = 0;
 
-    public UtilisateurCAN(String nom, String categorie) {
+    public UtilisateurCAN(String nom, Categorie categorie) {
         this.id = ++compteur;
         this.nom = nom;
         this.categorie = categorie;
@@ -42,11 +44,11 @@ public abstract class UtilisateurCAN {
         this.nom = nom;
     }
 
-    public String getCategorie() {
+    public Categorie getCategorie() {
         return categorie;
     }
 
-    public void setCategorie(String categorie) {
+    public void setCategorie(Categorie categorie) {
         this.categorie = categorie;
     }
 
