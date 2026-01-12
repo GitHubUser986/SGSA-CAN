@@ -402,7 +402,9 @@ public class SecurityService{
         System.out.println(" • Niveau utilisateur : " + utilisateur.getNiveauAcces());
         System.out.println(" • Niveau requis : " + zone.getNiveauRequis());
 
-        enregistrerAccec(badge, zone, "OK");
+        String raison = "";
+
+        enregistrerAcces(badge, zone, "Autorisé", raison);
     };
 
     public void refuserAcces(Badge badge, ZoneSecurisee zone, String raison) {
@@ -421,12 +423,137 @@ public class SecurityService{
         System.out.println(" • Raison : " + raison);
 
         if (zone != null){
-            enregistrerAccec(badge, zone, raison);
+            enregistrerAcces(badge, zone,"Refus" ,raison);
         }
     };
 
-    public void enregistrerAccec(Badge badge, ZoneSecurisee zone, String resultat) {
-        AccesLog log = new AccesLog(badge, zone, resultat);
+    public void enregistrerAcces(Badge badge, ZoneSecurisee zone, String resultat, String raison) {
+        AccesLog log = new AccesLog(badge, zone, resultat, raison);
         accesLog.add(log);
     };
+
+    /************************************** Access History & Logs Methods *************************************/
+    // Liste des logs par zone
+    public ArrayList<AccesLog> rechercherParZone(String nomZone) throws DonneeInvalideException, ZoneInterditeException {
+        if(nomZone == null || nomZone.isEmpty() || nomZone.isBlank()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomvide();
+            throw exception;
+        }
+
+        ZoneSecurisee zone = rechercherZone(nomZone);
+        if(zone == null) {
+            ZoneInterditeException exception = new ZoneInterditeException();
+            exception.zoneInexistante();
+            throw exception;
+        }
+
+        ArrayList<AccesLog> zoneLogs = new ArrayList<AccesLog>();
+        System.out.println("Logs de la zone : "+ zone.getNomZone());
+        for (AccesLog aLog : accesLog) {
+            if(aLog.getZone().getNomZone() == nomZone) {
+                zoneLogs.add(aLog);
+
+            }
+        }
+        return zoneLogs;
+    }
+
+    // Liste des logs par user
+    public ArrayList<AccesLog> listerAccesParUtilisateur(int userId) {
+        UtilisateurCAN user = rechercherPadId(userId);
+        ArrayList<AccesLog> userLogs = new ArrayList<AccesLog>();
+
+        System.out.println("Les tentatives de "+ user.getNom());
+        for (AccesLog aLog : accesLog) {
+            if(aLog.getBadge().getUtilisateur().getId() == userId){
+                userLogs.add(aLog);
+            }
+        }
+        return userLogs;
+    }
+
+    // Liste des logs par date
+    public ArrayList<AccesLog> listerAccesParDate(LocalDate date) throws DonneeInvalideException {
+        if(date == null) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.dateInvalide();
+            throw exception;
+        }
+
+        ArrayList<AccesLog> dateLogs = new ArrayList<AccesLog>();
+        System.out.println("Logs de la date : "+ date);
+        
+        for (AccesLog eLog : accesLog) {
+            if(eLog.getDate().equals(date)) {
+                dateLogs.add(eLog);
+            }
+        }
+        return dateLogs;
+    }
+
+    // Liste des logs par badge
+    public ArrayList<AccesLog> listerAccesParBadge(int numeroBadge) throws BadgeInvalideException {
+        Badge badge = rechercherParBadge(numeroBadge);
+        ArrayList<AccesLog> badgeLogs = new ArrayList<AccesLog>();
+
+        System.out.println("Logs de badge " + numeroBadge);
+        for (AccesLog aLog : accesLog) {
+            if(aLog.getBadge().equals(badge)){
+                badgeLogs.add(aLog);
+            }
+        }
+        return badgeLogs;
+
+    }
+
+    // Liste des logs
+    public void afficherHistorique() throws DonneeInvalideException {
+        if(accesLog.isEmpty()){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
+        }
+
+        System.out.println("**************************************Historique Complet**************************************");
+        System.out.println("Total : "+ accesLog.size());
+        for (AccesLog aLog : accesLog) {
+            System.out.println("Date : " + aLog.getDate());
+            System.out.println("Utilisateur : "+ aLog.getBadge().getUtilisateur().getNom());
+            System.out.println("Zone : " + aLog.getZone());
+            System.out.println("Résultat : "+ aLog.getResultat());
+            if(aLog.getResultat().equals("Refus")){
+                System.out.println("Raison : "+ aLog.getRaisonRefus());
+            }
+        }
+
+    }
+    // Trier Acces par date
+    public void trierAccesParDate() throws DonneeInvalideException {
+        if(accesLog.isEmpty()){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.listeVide();
+            throw exception;
+        }
+        
+        accesLog.sort((aLog1, aLog2) -> {
+            int dateCompare = aLog1.getDate().compareTo(aLog2.getDate());
+            if(dateCompare != 0){
+                return dateCompare;
+            }
+            return aLog1.getTime().compareTo(aLog2.getTime());
+        });
+        
+        for (AccesLog aLog : accesLog) {
+            System.out.print("[Date : " + aLog.getDate() + " - " +aLog.getTime() + "] ");
+            System.out.print("Badge : "+ aLog.getBadge());
+            System.out.println(" -> Zone : " + aLog.getZone());
+            System.out.println("Résultat : "+ aLog.getResultat());
+            if(aLog.getResultat().equals("Refus")){
+                System.out.println("Raison : "+ aLog.getRaisonRefus());
+            }
+        }
+    }
+
+
 }
