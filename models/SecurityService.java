@@ -226,7 +226,7 @@ public class SecurityService{
     }
 
     // bloquer Badge
-    public void bloquerBadge(int numeroBadge, Staff admin) throws UnauthorizedException, BadgeInvalideException {
+    public void bloquerBadge(int numeroBadge, UtilisateurCAN admin) throws UnauthorizedException, BadgeInvalideException {
         Badge badge;
         badge = rechercherParBadge(numeroBadge);
 
@@ -245,7 +245,7 @@ public class SecurityService{
     }
 
     // débloquer badge
-    public void debloquerBadge(int numeroBadge, Staff admin) throws UnauthorizedException, BadgeInvalideException {
+    public void debloquerBadge(int numeroBadge, UtilisateurCAN admin) throws UnauthorizedException, BadgeInvalideException {
         Badge badge;
         badge = rechercherParBadge(numeroBadge);
 
