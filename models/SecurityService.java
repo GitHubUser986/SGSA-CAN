@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import enums.CategorieSpectateur;
+import enums.CategorieStaff;
 import enums.Statut;
 import exceptions.BadgeInvalideException;
 import exceptions.DonneeInvalideException;
@@ -240,8 +242,13 @@ public class SecurityService {
             exception.staffOnly();
             throw exception;
         }
-
        
+        Staff adminStaff = (Staff) admin;
+        if(!(adminStaff.getCategorieStaff().equals(CategorieStaff.SECURITE))) {
+            UnauthorizedException exception = new UnauthorizedException();
+            exception.securityOnly();
+            throw exception;
+        }
 
         if (badge.getStatut() == Statut.BLOQUE) {
             System.out.println("Cet utilisateur est déjà bloqué");
@@ -260,6 +267,13 @@ public class SecurityService {
         if (!(admin instanceof Staff)) {
             UnauthorizedException exception = new UnauthorizedException();
             exception.staffOnly();
+            throw exception;
+        }
+
+        Staff adminStaff = (Staff) admin;
+        if(!(adminStaff.getCategorieStaff().equals(CategorieStaff.SECURITE))) {
+            UnauthorizedException exception = new UnauthorizedException();
+            exception.securityOnly();
             throw exception;
         }
 
