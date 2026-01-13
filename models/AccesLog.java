@@ -21,6 +21,7 @@ public class AccesLog {
         this.raisonRefus = raison;
     }
 
+
     public LocalDate getDate() {
         return date;
     }

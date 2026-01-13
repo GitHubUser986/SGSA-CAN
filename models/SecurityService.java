@@ -9,6 +9,7 @@ import java.util.Comparator;
 import enums.Categorie;
 import enums.CategorieSpectateur;
 import enums.CategorieStaff;
+import enums.CategorieVIP;
 import enums.Statut;
 import exceptions.BadgeInvalideException;
 import exceptions.DonneeInvalideException;
@@ -235,7 +236,8 @@ public class SecurityService {
     }
 
     // bloquer Badge
-    public void bloquerBadge(int numeroBadge, UtilisateurCAN admin) throws UnauthorizedException, BadgeInvalideException {
+    public void bloquerBadge(int numeroBadge, UtilisateurCAN admin)
+            throws UnauthorizedException, BadgeInvalideException {
         Badge badge;
         badge = rechercherParBadge(numeroBadge);
 
@@ -244,9 +246,9 @@ public class SecurityService {
             exception.staffOnly();
             throw exception;
         }
-       
+
         Staff adminStaff = (Staff) admin;
-        if(!(adminStaff.getCategorieStaff().equals(CategorieStaff.SECURITE))) {
+        if (!(adminStaff.getCategorieStaff().equals(CategorieStaff.SECURITE))) {
             UnauthorizedException exception = new UnauthorizedException();
             exception.securityOnly();
             throw exception;
@@ -273,7 +275,7 @@ public class SecurityService {
         }
 
         Staff adminStaff = (Staff) admin;
-        if(!(adminStaff.getCategorieStaff().equals(CategorieStaff.SECURITE))) {
+        if (!(adminStaff.getCategorieStaff().equals(CategorieStaff.SECURITE))) {
             UnauthorizedException exception = new UnauthorizedException();
             exception.securityOnly();
             throw exception;
@@ -449,8 +451,8 @@ public class SecurityService {
         }
 
         System.out.println(" + Raison : " + raison);
-        if (zone != null){
-            enregistrerAcces(badge, zone,"Refus" ,raison);
+        if (zone != null) {
+            enregistrerAcces(badge, zone, "Refus", raison);
         }
     }
 
@@ -459,9 +461,7 @@ public class SecurityService {
         accesLog.add(log);
     };
 
-    /********************************* 
-     * Rapport
-     ****************************** */
+    /********************************* Rapport ************************/
 
     // Calcule du teaux de refus
     public double calculerTauxRefus() {
@@ -616,30 +616,90 @@ public class SecurityService {
         int actif = 0;
         int bloques = 0;
         int expires = 0;
+        int inactif = 0;
         for (Badge badge : badges) {
-            if (badge.getStatut().equals("bloque")) {
+            if (badge.getStatut() == Statut.BLOQUE) {
                 bloques++;
-            } else if (!badge.estBadgeValide()) {
+            } else if (badge.getStatut() == Statut.EXPIRE) {
                 expires++;
-            } else {
+            } else if (badge.getStatut() == Statut.ACTIF) {
                 actif++;
+            } else {
+                inactif++;
             }
         }
         System.out.println("Badge actifs : " + actif);
+        System.out.println("Badges expirés : " + inactif);
         System.out.println("Badges bloqués : " + bloques);
         System.out.println("Badges expirés : " + expires);
+
+        System.out.println("\n------ Répartition des utilisateur ------");
+        int spectateur = 0;
+        int staff = 0;
+        int vip = 0;
+
+        for (UtilisateurCAN utilisateur : utilisateurs) {
+            if (utilisateur instanceof Spectateur)
+                spectateur++;
+            else if (utilisateur instanceof Staff)
+                staff++;
+            else if (utilisateur instanceof VIP)
+                vip++;
+        }
+        System.out.println(" + Le nombre totatl des spectateurs : " + spectateur);
+        System.out.println(" + Le nombre total des staff : " + staff);
+        System.out.println(" + Le nombre total des des VIP : " + vip);
+
+        System.out.println("\n------ La totalités des accès ------");
+        int totalSucces = 0;
+        int totalRefus = 0;
+
+        for (AccesLog log : accesLog) {
+            if (log.getResultat().equalsIgnoreCase("autorisé")) {
+                totalSucces++;
+            } else {
+                totalRefus++;
+            }
+        }
+        System.out.println("Total des accès autorisés : " + totalSucces);
+        System.out.println("Total des accès refusés : " + totalRefus);
 
         System.out.println("Nombre total d'accès : " + accesLog.size());
         System.out.printf("Taux de refus : %.2f %%\n", calculerTauxRefus());
 
         System.out.println("\n------ Les Zones les plus sensibles ------");
         for (ZoneSecurisee zone : getZonesPlusSensibles()) {
+
+            int refus = 0;
+            int autorise = 0;
             System.out.println(" + " + zone.getNomZone());
+
+            for (AccesLog log : accesLog) {
+                if (log.getZone() != null && log.getZone().getNomZone().equals(zone.getNomZone())) {
+                    if (log.getResultat().equalsIgnoreCase("refus")) {
+                        refus++;
+                    } else {
+                        autorise++;
+                    }
+                }
+            }
+            System.out.println("   + Les accèes autorisés : " + autorise);
+            System.out.println("   + Les accèes refusés : " + refus);
+            System.out.println("   + Total : " + (refus + autorise));
         }
 
         System.out.println("\n------ Les badges les plus utilisés ------");
         for (Badge badge : getBadgesPlusUtilises()) {
-            System.out.println(" + Badge N° : " + badge.getNumeroBadge() + " de " + badge.getUtilisateur());
+
+            int utilisation = 0;
+            System.out.println(" + Badge N° : " + badge.getNumeroBadge() + " de " + badge.getUtilisateur().getNom());
+
+            for(AccesLog log : accesLog){
+                if(log.getBadge() != null && log.getBadge().getNumeroBadge() == badge.getNumeroBadge()){
+                    utilisation++;
+                }
+            }
+            System.out.println("   + Nombre d'utilisation : " + utilisation);
         }
 
         System.out.println("\n------ Les statistiques utilisateurs ------");
@@ -651,7 +711,155 @@ public class SecurityService {
         System.out.println("===================================================");
     }
 
-    /*************************************** 
+
+    // ************************* Les Methodes d'affichage ****************************
+    
+    public void afficherUtilisateur(UtilisateurCAN utilisateur){
+        if (utilisateur == null){
+            System.out.println("Utilisateur inexistant");
+        }
+
+        System.out.println("------ Utilisateur ------");
+        System.out.println("+ ID : " + utilisateur.getId());
+        System.out.println("+ Nom : " + utilisateur.getNom());
+        System.out.println("+ Categorie : " + utilisateur.getCategorie());
+        System.out.println("+ Niveau d'accés : " + utilisateur.getNiveauAcces());
+        System.out.println("+ Badge : " + utilisateur.badge.getNumeroBadge());
+    }
+
+    public void afficherBadge(Badge badge){
+        if(badge == null){
+            System.out.println("Badge inexistan");
+        }
+
+        System.out.println("------ Badge ------");
+        System.out.println("+ Numero : " + badge.getNumeroBadge());
+        System.out.println("+ Status : " + badge.getStatut());
+        if (badge.getUtilisateur() != null){
+            System.out.println("+ Utilisateur : " + badge.getUtilisateur().getNom());
+        }
+        System.out.println("+ Debut : " + badge.getDateDebut());
+        System.out.println("+ Fin : " + badge.getDateFin());
+
+    }
+
+    public void afficherZone(ZoneSecurisee zone){
+        if(zone == null){
+            System.out.println("Zone inexistante");
+        }
+
+        System.out.println("------ Zone sécurisée ------");
+        System.out.println("+ Id : " + zone.getIdZone());
+        System.out.println("+ Nome : " + zone.getNomZone());
+        System.out.println("+ Niveau requis : " + zone.getNiveauRequis());
+    }
+
+    public void afficherAccesLog(AccesLog log){
+        if(log ==  null){
+            System.out.println("Log inexistant");
+        }
+
+        System.out.println("------ Acces Log ------");
+        System.out.println("+ Date : " + log.getDate());
+        System.out.println("+ Heure : " + log.getTime());
+        System.out.println("+ Badge : " + log.getBadge().getNumeroBadge());
+        if(log.getZone() != null){
+            System.out.println("+ Zone : " + log.getZone().getNomZone());
+        }else{
+            System.out.println("+ Zone : inconnue");
+        }
+        System.out.println("+ Résultat : " + log.getResultat());
+    }
+
+    public void initialiserDonnesTest(){
+        SecurityService service = new SecurityService();
+        try {
+            // les utilisateur
+            Spectateur s1 = new Spectateur("Mohammed Ali", CategorieSpectateur.TRIBUNE_POPULAIRE);
+            Spectateur s2 = new Spectateur("Fatima Aloui", CategorieSpectateur.TRIBUNE_POPULAIRE);
+            Spectateur s3 = new Spectateur("Ahmes Bneali", CategorieSpectateur.TRIBUNE_VIP);
+            Spectateur s4 = new Spectateur("Youssef Karami", CategorieSpectateur.GRADIN_NORD);
+            Spectateur s5 = new Spectateur("Salma Idrissi", CategorieSpectateur.TRIBUNE_VIP);
+            Spectateur s6 = new Spectateur("Othmane Mrani ", CategorieSpectateur.TRIBUNE_VIP);
+            Spectateur s7 = new Spectateur("Imane zahiri ", CategorieSpectateur.TRIBUNE_POPULAIRE);
+            Spectateur s8 = new Spectateur("Hassan Rochdi", CategorieSpectateur.GRADIN_NORD);
+            Spectateur s9 = new Spectateur("Ayoub Chafik", CategorieSpectateur.GRADIN_SUD);
+            Spectateur s10 = new Spectateur("Morad Fassi", CategorieSpectateur.GRADIN_SUD);
+
+            Staff st1 = new Staff("Karim Fadil", CategorieStaff.SECURITE);
+            Staff st2 = new Staff("Sara Khatib", CategorieStaff.ACCUEIL);
+            Staff st3 = new Staff("Yassine Zougar", CategorieStaff.MAINTENANCE);
+            Staff st4 = new Staff("Hamza Maliki", CategorieStaff.TECHNIQUE);
+            Staff st5 = new Staff("Meryem Mikhmar", CategorieStaff.MEDICAL);
+            Staff st6 = new Staff("Khadija Hajoui", CategorieStaff.MEDIA);
+            Staff st7 = new Staff("Anass Rizki", CategorieStaff.RESTAURATION);
+            Staff st8 = new Staff("Aicha Ramli", CategorieStaff.ACCUEIL);
+
+            VIP v1 = new VIP("Omar Bennani", CategorieVIP.CELEBRITY);
+            VIP v2 = new VIP("Amina Raji", CategorieVIP.PRESIDENTIEL);
+            VIP v3 = new VIP("Said Moumtaz", CategorieVIP.AMBASSADEURS);
+            VIP v4 = new VIP("Kamal Khalif", CategorieVIP.SPONSORS);
+            VIP v5 = new VIP("Nour Chahid", CategorieVIP.PRESSE_INTERNATIONALE);
+            VIP v6 = new VIP("Laila Ouarak", CategorieVIP.DELEGATION_OFFICIELLE);
+            VIP v7 = new VIP("Driss Belahj", CategorieVIP.FIFA_CAF);
+
+            service.ajouterUtilisateur(s1);
+            service.ajouterUtilisateur(s2);
+            service.ajouterUtilisateur(s3);
+            service.ajouterUtilisateur(s4);
+            service.ajouterUtilisateur(s5);
+            service.ajouterUtilisateur(s6);
+            service.ajouterUtilisateur(s7);
+            service.ajouterUtilisateur(s8);
+            service.ajouterUtilisateur(s9);
+            service.ajouterUtilisateur(s10);
+
+            service.ajouterUtilisateur(st1);
+            service.ajouterUtilisateur(st2);
+            service.ajouterUtilisateur(st3);
+            service.ajouterUtilisateur(st4);
+            service.ajouterUtilisateur(st5);
+            service.ajouterUtilisateur(st6);
+            service.ajouterUtilisateur(st7);
+            service.ajouterUtilisateur(st8);
+
+            service.ajouterUtilisateur(v1);
+            service.ajouterUtilisateur(v2);
+            service.ajouterUtilisateur(v3);
+            service.ajouterUtilisateur(v4);
+            service.ajouterUtilisateur(v5);
+            service.ajouterUtilisateur(v6);
+            service.ajouterUtilisateur(v7);
+
+
+            //Les zone
+            ZoneSecurisee z1 = new ZoneSecurisee("Entée Générale", 1);
+            ZoneSecurisee z2 = new ZoneSecurisee("Tibune", 1);
+            ZoneSecurisee z3 = new ZoneSecurisee("Vestiaire", 2);
+            ZoneSecurisee z4 = new ZoneSecurisee("Salle Presse", 2);
+            ZoneSecurisee z5 = new ZoneSecurisee("Zone Staff", 2);
+            ZoneSecurisee z6 = new ZoneSecurisee("Salle serveurs", 1);
+            ZoneSecurisee z7 = new ZoneSecurisee("Zone VIP", 3);
+            ZoneSecurisee z8 = new ZoneSecurisee("Salle De Contrôle", 3);
+
+            service.ajouterZone(z1);
+            service.ajouterZone(z2);
+            service.ajouterZone(z3);
+            service.ajouterZone(z4);
+            service.ajouterZone(z5);
+            service.ajouterZone(z6);
+            service.ajouterZone(z7);
+            service.ajouterZone(z8);
+
+            for(UtilisateurCAN utilisateur : utilisateurs){
+                genererBadge(utilisateur, LocalDate.now().minusDays(5), LocalDate.now().plusDays(10));
+            }
+        } catch (Exception e) {
+            System.out.println("Erreur lor de l\'initialisation");
+        }
+    }
+
+    /***************************************
      * Access History & Logs Methods
      **************************************/
 
