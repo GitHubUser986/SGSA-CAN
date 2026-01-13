@@ -1,6 +1,7 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import enums.Categorie;
 import enums.CategorieSpectateur;
 import enums.CategorieStaff;
 import enums.CategorieVIP;
@@ -9,6 +10,7 @@ import exceptions.DonneeInvalideException;
 import exceptions.UnauthorizedException;
 import exceptions.ZoneInterditeException;
 import models.SecurityService;
+import models.AccesLog;
 import models.Badge;
 import models.Spectateur;
 import models.Staff;
@@ -71,9 +73,7 @@ public class Main {
 
         } catch (DonneeInvalideException e) {
         }
-    /******** Teste zones*********** */
-
-
+         /******** Teste zones*********** */
         try {
             // 1. Ajouter des zones
             System.out.println("\n--- Ajout de zones sécurisées ---");
@@ -146,7 +146,7 @@ public class Main {
             System.out.println("Erreur: " + e.getMessage());
         }
 
-            /******** Test badges*********** */
+        /******** Test badges*********** */
 
         System.out.println("/******** Test Badges Management*********** */");
         try {
@@ -188,7 +188,6 @@ public class Main {
 
             try {
                 Badge badgeInvalide = service.genererBadge(s1, today, null);
-                
             } catch (DonneeInvalideException e) {
                 
             }
@@ -323,6 +322,163 @@ public class Main {
 
         } catch (Exception e) {
             System.out.println("Erreur de big TRY" + e.getMessage());
+        }
+
+        /******** Test Access History & Logs*********** */
+        System.out.println("\n/******** Test Access History & Logs************/");
+        try {
+            System.out.println("Création des users, zones, badges");
+            Spectateur spectateur1 = new Spectateur("Ali Tazi", CategorieSpectateur.GRADIN_NORD);
+            Spectateur spectateur2 = new Spectateur("Nadia Amrani",CategorieSpectateur.GRADIN_SUD);
+            Staff staff1 = new Staff("Youssef Sécurité",CategorieStaff.SECURITE);
+            VIP vip1 = new VIP("Ministre Laqjae",CategorieVIP.DELEGATION_OFFICIELLE);
+            VIP vip2 = new VIP("Président Infantino",CategorieVIP.FIFA_CAF);
+
+            service.ajouterUtilisateur(spectateur1);
+            service.ajouterUtilisateur(spectateur2);
+            service.ajouterUtilisateur(staff1);
+            service.ajouterUtilisateur(vip1);
+            service.ajouterUtilisateur(vip2);
+
+            ZoneSecurisee zonePublic = new ZoneSecurisee("Entrée Publique", 1);
+            ZoneSecurisee zoneStaffArea = new ZoneSecurisee("Bureau Staff", 2);
+            ZoneSecurisee zoneSalonVIP = new ZoneSecurisee("Salon VIP Privé", 3);
+            ZoneSecurisee zoneParking = new ZoneSecurisee("Parking", 1);
+
+            service.ajouterZone(zonePublic);
+            service.ajouterZone(zoneParking);
+            service.ajouterZone(zoneSalonVIP);
+            service.ajouterZone(zoneStaffArea);
+
+            LocalDate today = LocalDate.now();
+            LocalDate day30 = today.plusDays(30);
+            LocalDate past = today.minusDays(5);
+
+            Badge badgeSpectateur1 = service.genererBadge(spectateur1, today, day30);
+            Badge badgeSpectateur2 = service.genererBadge(spectateur2, today, day30);
+            Badge badgeStaff1 = service.genererBadge(staff1, today, day30);
+            Badge badgeVIP1 = service.genererBadge(vip1, today, day30);
+            Badge badgeVIP2 = service.genererBadge(vip2, today, day30);
+            Badge badgeExpire = service.genererBadge(spectateur1, past, today.minusDays(1));
+
+            System.out.println("4 users, 4 zones, 5 badges créés");
+
+            // successful accesses
+            service.verfierAcces(badgeSpectateur1.getNumeroBadge(),"Entrée Publique");
+            service.verfierAcces(badgeSpectateur1.getNumeroBadge(),"Parking");
+            service.verfierAcces(badgeStaff1.getNumeroBadge(),"Bureau Staff");
+            service.verfierAcces(badgeVIP1.getNumeroBadge(),"Salon VIP Privé");
+            service.verfierAcces(badgeSpectateur2.getNumeroBadge(), "Entrée Publique");
+            service.verfierAcces(badgeStaff1.getNumeroBadge(),"Entrée Publique");
+            service.verfierAcces(badgeVIP1.getNumeroBadge(),"Bureau Staff");
+            service.verfierAcces(badgeVIP2.getNumeroBadge(),"Bureau Staff");
+
+            // Failed accesses (insufficient level)
+            service.verfierAcces(badgeSpectateur1.getNumeroBadge(), "Salon VIP Privé");
+            service.verfierAcces(badgeSpectateur1.getNumeroBadge(),"Bureau Staff");
+            service.verfierAcces(badgeSpectateur2.getNumeroBadge(),"Bureau Staff");
+
+            System.out.println("11 tentatives (OK/REFUS)");
+
+            System.out.println("\nTest 1 : Recherche par zone");
+            try {
+                System.out.println("Logs de Salon VIP Privé");
+                ArrayList<AccesLog> vipLogs = service.rechercherParZone("Salon VIP Privé");
+                System.out.println(vipLogs.size() + " tentatives");
+                for (AccesLog accesLog : vipLogs) {
+                    System.out.println(accesLog.getBadge().getUtilisateur().getNom() + " : " + accesLog.getResultat());
+                }
+
+            } catch (DonneeInvalideException | ZoneInterditeException e) {
+               
+            }
+
+            System.out.println("Test avec nom zone vide");
+            try {
+                service.rechercherParZone("");
+                System.out.println("Problème r.399");
+            } catch (DonneeInvalideException | ZoneInterditeException e) {
+               
+            }
+
+            System.out.println("Test avec nom zone inexistant");
+            try {
+                service.rechercherParZone("null");
+                System.out.println("Problème r.407");
+            } catch (DonneeInvalideException | ZoneInterditeException e) {
+               
+            }
+
+            System.out.println("\nTest 2 : Liste d'accès par user");
+            try {
+                System.out.println("Logs de user :" + spectateur1.getNom());
+                ArrayList<AccesLog> userLogs = service.listerAccesParUtilisateur(spectateur1.getId());
+                System.out.println(userLogs.size() + " tentatives");
+                for (AccesLog accesLog : userLogs) {
+                    System.out.println("Zone : "+ accesLog.getZone() + " Résultat : "+accesLog.getResultat());
+                }
+            } catch (Exception e) {
+               
+            }
+
+            System.out.println("\nTest 3 : Liste d'accès de la date "+ today);
+            try {
+                System.out.println("Logs de " + today);
+                ArrayList<AccesLog> todayLogs = service.listerAccesParDate(today);
+                System.out.println(todayLogs.size() + " tentatives");
+                for (AccesLog accesLog : todayLogs) {
+                    System.out.println(accesLog.getBadge().getUtilisateur().getNom() + " -> " + accesLog.getZone().getNomZone() +" : "+accesLog.getResultat());
+                }
+            } catch (DonneeInvalideException e) {
+               
+            }
+
+            try {
+                System.out.println("Test de date invalide " );
+                service.listerAccesParDate(null);
+            } catch (DonneeInvalideException e) {
+               
+            }
+
+            System.out.println("\nTest 4 : Liste d'accès par badge ");
+            try {
+                System.out.println("Logs de badge : "+badgeSpectateur1.getNumeroBadge());
+                ArrayList<AccesLog> badgeLogs = service.listerAccesParBadge(badgeSpectateur1.getNumeroBadge());
+                System.out.println(badgeLogs.size()+" tentatives");
+                for (AccesLog accesLog : badgeLogs) {
+                    System.out.println("Zone : "+ accesLog.getZone().getNomZone() + " Résultat : "+accesLog.getResultat());
+                    if(accesLog.getResultat().equals("Refus")){
+                        System.out.println("Raison : "+accesLog.getRaisonRefus());
+                    }
+                }
+            } catch (BadgeInvalideException e) {
+               
+            }
+
+            try {
+                System.out.println("Test par badge inexistant");
+                service.listerAccesParBadge(4363);
+            
+            } catch (BadgeInvalideException e) {
+               
+            }
+
+            System.out.println("\nTest 5 : Historique complet");
+            try {
+                service.afficherHistorique();
+            } catch (Exception e) {
+               
+            }
+
+            System.out.println("\nTest 6 : Tri par date/heure");
+            try {
+                service.trierAccesParDate();
+            } catch (Exception e) {
+               
+            }
+
+        } catch (Exception e) {
+           
         }
     }
 }

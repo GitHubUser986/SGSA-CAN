@@ -231,8 +231,7 @@ public class SecurityService {
     }
 
     // bloquer Badge
-    public void bloquerBadge(int numeroBadge, UtilisateurCAN admin)
-            throws UnauthorizedException, BadgeInvalideException {
+    public void bloquerBadge(int numeroBadge, UtilisateurCAN admin) throws UnauthorizedException, BadgeInvalideException {
         Badge badge;
         badge = rechercherParBadge(numeroBadge);
 
@@ -241,6 +240,8 @@ public class SecurityService {
             exception.staffOnly();
             throw exception;
         }
+
+       
 
         if (badge.getStatut() == Statut.BLOQUE) {
             System.out.println("Cet utilisateur est déjà bloqué");
@@ -391,7 +392,7 @@ public class SecurityService {
 
         if (utilisateur.getNiveauAcces() < zone.getNiveauRequis()) {
             String raison = "Niveau d'accès insuffisant (" + utilisateur.getNiveauAcces() + " < "
-                    + zone.getNiveauRequis();
+                    + zone.getNiveauRequis() + ")";
             refuserAcces(badge, zone, raison);
             return false;
         }
@@ -405,11 +406,11 @@ public class SecurityService {
         UtilisateurCAN utilisateur = badge.getUtilisateur();
 
         System.out.println("Accés Autorisé");
-        System.out.println(" • Utilisateur : " + utilisateur.getNom() + " (ID: " + utilisateur.getId() + " )");
-        System.out.println(" • Badge N° : " + badge.getNumeroBadge());
-        System.out.println(" • Zone : " + zone.getNomZone());
-        System.out.println(" • Niveau utilisateur : " + utilisateur.getNiveauAcces());
-        System.out.println(" • Niveau requis : " + zone.getNiveauRequis());
+        System.out.println(" + Utilisateur : " + utilisateur.getNom() + " (ID: " + utilisateur.getId() + " )");
+        System.out.println(" + Badge N° : " + badge.getNumeroBadge());
+        System.out.println(" + Zone : " + zone.getNomZone());
+        System.out.println(" + Niveau utilisateur : " + utilisateur.getNiveauAcces());
+        System.out.println(" + Niveau requis : " + zone.getNiveauRequis());
 
         String raison = "";
 
@@ -421,16 +422,16 @@ public class SecurityService {
         UtilisateurCAN utilisateur = badge.getUtilisateur();
 
         System.out.println("Accés Refusé");
-        System.out.println(" • Utilisateur : " + utilisateur.getNom() + " (ID: " + utilisateur.getId() + " )");
-        System.out.println(" • Badge N° : " + badge.getNumeroBadge());
+        System.out.println(" + Utilisateur : " + utilisateur.getNom() + " (ID: " + utilisateur.getId() + " )");
+        System.out.println(" + Badge N° : " + badge.getNumeroBadge());
 
         if (zone != null) {
-            System.out.println(" • Zone : " + zone.getNomZone());
-            System.out.println(" • Niveau utilisateur : " + utilisateur.getNiveauAcces());
-            System.out.println(" • Niveau requis : " + zone.getNiveauRequis());
+            System.out.println(" + Zone : " + zone.getNomZone());
+            System.out.println(" + Niveau utilisateur : " + utilisateur.getNiveauAcces());
+            System.out.println(" + Niveau requis : " + zone.getNiveauRequis());
         }
 
-        System.out.println(" • Raison : " + raison);
+        System.out.println(" + Raison : " + raison);
         if (zone != null){
             enregistrerAcces(badge, zone,"Refus" ,raison);
         }
@@ -441,7 +442,9 @@ public class SecurityService {
         accesLog.add(log);
     };
 
-    /********************************* Rapport************************ */
+    /********************************* 
+     * Rapport
+     ****************************** */
 
     // Calcule du teaux de refus
     public double calculerTauxRefus() {
@@ -549,9 +552,9 @@ public class SecurityService {
             }
 
             System.out.println("Utilisateur : " + utilisateur.getNom());
-            System.out.println(" • Tentatives : " + total);
-            System.out.println(" • Succès : " + succes);
-            System.out.println(" • Refus : " + refus);
+            System.out.println(" + Tentatives : " + total);
+            System.out.println(" + Succès : " + succes);
+            System.out.println(" + Refus : " + refus);
         }
     }
 
@@ -574,10 +577,10 @@ public class SecurityService {
             }
 
             System.out.println("Badge N° : " + badge.getNumeroBadge());
-            System.out.println(" • Utilisateur : " + badge.getUtilisateur().getNom());
-            System.out.println(" • Tentatives : " + total);
-            System.out.println(" • Succès : " + succes);
-            System.out.println(" • Refus : " + refus);
+            System.out.println(" + Utilisateur : " + badge.getUtilisateur().getNom());
+            System.out.println(" + Tentatives : " + total);
+            System.out.println(" + Succès : " + succes);
+            System.out.println(" + Refus : " + refus);
         }
     }
 
@@ -614,12 +617,12 @@ public class SecurityService {
 
         System.out.println("\n------ Les Zones les plus sensibles ------");
         for (ZoneSecurisee zone : getZonesPlusSensibles()) {
-            System.out.println(" • " + zone.getNomZone());
+            System.out.println(" + " + zone.getNomZone());
         }
 
         System.out.println("\n------ Les badges les plus utilisés ------");
         for (Badge badge : getBadgesPlusUtilises()) {
-            System.out.println(" • Badge N° : " + badge.getNumeroBadge() + " de " + badge.getUtilisateur());
+            System.out.println(" + Badge N° : " + badge.getNumeroBadge() + " de " + badge.getUtilisateur());
         }
 
         System.out.println("\n------ Les statistiques utilisateurs ------");
@@ -631,9 +634,9 @@ public class SecurityService {
         System.out.println("===================================================");
     }
 
-    /**************************************
+    /*************************************** 
      * Access History & Logs Methods
-     *************************************/
+     **************************************/
     // Liste des logs par zone
     public ArrayList<AccesLog> rechercherParZone(String nomZone)
             throws DonneeInvalideException, ZoneInterditeException {
@@ -750,7 +753,7 @@ public class SecurityService {
 
         for (AccesLog aLog : accesLog) {
             System.out.print("[Date : " + aLog.getDate() + " - " + aLog.getTime() + "] ");
-            System.out.print("Badge : " + aLog.getBadge());
+            System.out.print("Badge : N°" + aLog.getBadge().getNumeroBadge());
             System.out.println(" -> Zone : " + aLog.getZone());
             System.out.println("Résultat : " + aLog.getResultat());
             if (aLog.getResultat().equals("Refus")) {
