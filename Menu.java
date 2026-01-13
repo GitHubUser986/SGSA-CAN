@@ -7,6 +7,10 @@ import exceptions.ZoneInterditeException;
 import service.MethodsMenu;
 
 public class Menu {
+    public Menu() {
+        
+    }
+
     public void afficherMenu() throws DonneeInvalideException, ZoneInterditeException, BadgeInvalideException, UnauthorizedException {
         MethodsMenu m = new MethodsMenu();
         int menu;
@@ -21,6 +25,7 @@ public class Menu {
             System.out.println("4. Menu pour la recherche");
             System.out.println("5. Menu pour la gestion");
             System.out.println("6. Menu pour autres opérations");
+            System.out.println("7. Menu pour rapports et statistiques");
             System.out.println("0. Quitter l'application");
             menu = sc.nextInt();
 
@@ -45,6 +50,14 @@ public class Menu {
                         System.out.println("3. Liste des badges actifs");
                         System.out.println("4. Liste des badges bloqués");
                         System.out.println("5. Liste des badges expirés");
+                        System.out.println("6. Liste des accès par utilisateur");
+                        System.out.println("7. Liste des accès par date");
+                        System.out.println("8. Liste des accès par zone");
+                        System.out.println("9. Liste des accès par badge");
+                        System.out.println("10. Historique des accès");
+                        System.out.println("11. Afficher les données de l'utilisateur");
+                        System.out.println("12. Afficher les données de badge");
+                        System.out.println("13. Afficher les données de la zone");
                         System.out.println("0. Quitter le menu");
                         operation = sc.nextInt();
                         m.methodsMenuAffichage(operation);
@@ -56,6 +69,7 @@ public class Menu {
                     System.out.println("-------------------------Tri-------------------------");
                     System.out.println("1. Trier les utilisateurs par nom");
                     System.out.println("2. Trier les zones par niveau");
+                    System.out.println("3. Trier l'historique des accès par date");
                     System.out.println("0. Quitter le menu");
                         operation = sc.nextInt();
                         m.methodsMenuTri(operation);
@@ -81,6 +95,7 @@ public class Menu {
                         System.out.println("2. Débloquer un badge");
                         System.out.println("3. Invalider un badge");
                         System.out.println("4. Vérifier la validité du badge");
+                        System.out.println("5. Vérifier l'accès d'un badge vers une zone");
                         System.out.println("0. Quitter le menu");
                         operation = sc.nextInt();
                         m.methodsMenuGerer(operation);
@@ -90,9 +105,22 @@ public class Menu {
                      do {
                         System.out.println("-------------------------Autres------------------------");
                         System.out.println("1. Compter utilisateur par type (Spectateur, Staff, VIP)");
+                        System.out.println("2. Valider les données de l'utilisateur");
+                        System.out.println("3. Valider les données de la zone");
+                        System.out.println("4. Valider les dates du badge");
+                        System.out.println("5. Vérifier les droits de blocage d'un staff");
                         System.out.println("0. Quitter le menu");
                         operation = sc.nextInt();
                         m.methodsMenuAutres(operation);
+                        } while(operation != 0);
+                    break;
+                case 7:
+                     do {
+                        System.out.println("----------------Rapport et Statistiques----------------");
+                        System.out.println("1. Générer un rapport complet");
+                        System.out.println("0. Quitter le menu");
+                        operation = sc.nextInt();
+                        m.methodsMenuRapports(operation);
                         } while(operation != 0);
                     break;
             
@@ -103,6 +131,6 @@ public class Menu {
         } while(menu != 0);
 
         sc.close();
-        
     }
+
 }

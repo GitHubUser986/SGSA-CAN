@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
-import enums.Categorie;
 import enums.CategorieSpectateur;
 import enums.CategorieStaff;
 import enums.CategorieVIP;
@@ -729,7 +728,7 @@ public class SecurityService {
 
     public void afficherBadge(Badge badge){
         if(badge == null){
-            System.out.println("Badge inexistan");
+            System.out.println("Badge inexistant");
         }
 
         System.out.println("------ Badge ------");
