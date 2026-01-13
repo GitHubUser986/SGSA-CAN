@@ -7,7 +7,7 @@ import exceptions.ZoneInterditeException;
 import service.MethodsMenu;
 
 public class Menu {
-    public static void main(String[] args) throws DonneeInvalideException, ZoneInterditeException, BadgeInvalideException, UnauthorizedException {
+    public void afficherMenu() throws DonneeInvalideException, ZoneInterditeException, BadgeInvalideException, UnauthorizedException {
         MethodsMenu m = new MethodsMenu();
         int menu;
         int operation;
