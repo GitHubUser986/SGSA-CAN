@@ -1,10 +1,12 @@
 package models;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
+import enums.Categorie;
 import enums.CategorieSpectateur;
 import enums.CategorieStaff;
 import enums.Statut;
@@ -380,6 +382,7 @@ public class SecurityService {
     /**************************************
      * Access Control
      *************************************/
+
     public boolean verfierAcces(int numeroBadge, String nomZone) throws BadgeInvalideException {
         Badge badge = rechercherParBadge(numeroBadge);
 
@@ -651,6 +654,7 @@ public class SecurityService {
     /*************************************** 
      * Access History & Logs Methods
      **************************************/
+
     // Liste des logs par zone
     public ArrayList<AccesLog> rechercherParZone(String nomZone)
             throws DonneeInvalideException, ZoneInterditeException {
@@ -774,5 +778,126 @@ public class SecurityService {
                 System.out.println("Raison : " + aLog.getRaisonRefus());
             }
         }
+    }
+
+    /********************************* 
+     * Validation & Exception Handling
+     ****************************** */
+
+    public void validerDonneesUtilisateur(String nom, String categorie) throws DonneeInvalideException{
+        if(nom == null || nom.isEmpty() || nom.isBlank()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomvide();
+            throw exception;
+        }
+
+        if(nom.length() < 2){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomLength();
+            throw exception;
+        }
+
+        if(!nom.matches("[a-zA-ZÀ-ÿ\\s'-]+")){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomInvalide();
+            throw exception;
+        }
+
+        if(categorie == null || categorie.isEmpty() || categorie.isBlank()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.categorieInconnu();
+            throw exception;
+        }  
+    }
+    
+    public void validerDonneesZone(String nom, int niveau) throws DonneeInvalideException, ZoneInterditeException{
+        if(nom == null || nom.isEmpty() || nom.isBlank()) {
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomvide();
+            throw exception;
+        }
+
+        if(nom.length() < 2){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomLength();
+            throw exception;
+        }
+
+        int[] niveaux = {1,2,3};
+        boolean notFound = true;
+        for (int n : niveaux) {
+            if(n == niveau){
+                notFound = false;
+                break;
+            }
+        }
+
+        if(notFound){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.niveauInvalide();
+            throw exception;
+        }
+        
+    }
+
+    public void validerDonneesBadge(LocalDate debut, LocalDate fin) throws DonneeInvalideException {
+        if(debut == null || fin == null){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.dateInvalide();
+            throw exception;
+        }
+        
+        LocalDate today = LocalDate.now();
+        if(debut.isBefore(today)){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.startDateOnlyToday();
+            throw exception;
+        }
+
+        if(fin.isAfter(debut)){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.intervalleInvalide();
+            throw exception;
+        }
+
+        long duree = ChronoUnit.DAYS.between(debut, fin);
+
+        if(duree >= 365){ 
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.duree365();
+            throw exception;
+        }
+
+    }
+
+    public void verifierDroitsBlocage(Staff admin) throws UnauthorizedException, DonneeInvalideException{
+        if(admin == null){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.utilisateurNull();
+            throw exception;
+        }
+
+        if(!(admin.getCategorieStaff().equals(CategorieStaff.SECURITE))) {
+            UnauthorizedException exception = new UnauthorizedException();
+            exception.securityOnly();
+            throw exception;
+        }
+
+        boolean notFound = true;
+        for (Badge b : badges) {
+            if(b.getUtilisateur().equals(admin)){
+                notFound = false;
+                break;
+            }
+        }
+
+        if(notFound){
+            UnauthorizedException exception = new UnauthorizedException();
+            exception.badgeObligatoire();
+            throw exception;
+        }
+
+        System.out.println("Ce staff a les droits de blocage");
+
     }
 }

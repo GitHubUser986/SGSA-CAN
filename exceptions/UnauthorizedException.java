@@ -17,4 +17,8 @@ public class UnauthorizedException extends Exception {
     public void securityOnly(){
         System.out.println("Seuls staff de sécurité autorisée à effectuer cette opération");
     }
+
+    public void badgeObligatoire(){
+        System.out.println("Chaque utilisateur doit avoir un badge obligatoirement");
+    }
 }
