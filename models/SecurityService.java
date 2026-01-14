@@ -46,7 +46,7 @@ public class SecurityService {
             throw exception;
         }
         utilisateurs.add(utilisateur);
-        System.out.println("Utilisateur ajouté!");
+        //System.out.println("Utilisateur ajouté!");
     }
 
     // La recherche par nom
@@ -58,7 +58,7 @@ public class SecurityService {
         for (UtilisateurCAN utilisateur : utilisateurs) {
             if (utilisateur.getNom().toLowerCase().contains(nomChercher)) {
                 System.out.println("utilisateur trouvé: \n");
-                System.out.println(utilisateur);
+                afficherUtilisateur(utilisateur);
                 return utilisateur;
             }
         }
@@ -71,7 +71,7 @@ public class SecurityService {
         for (UtilisateurCAN utilisateur : utilisateurs) {
             if (utilisateur.getId() == id) {
                 System.out.println("utilisateur trouvé \n");
-                System.out.println(utilisateur);
+                afficherUtilisateur(utilisateur);
                 return utilisateur;
             }
         }
@@ -86,7 +86,7 @@ public class SecurityService {
         }
         System.out.println("==========Liste Des Utilisateurs==========");
         for (UtilisateurCAN utilisateur : utilisateurs) {
-            System.out.println(utilisateur);
+            afficherUtilisateur(utilisateur);
         }
     }
 
@@ -135,7 +135,7 @@ public class SecurityService {
         }
 
         zones.add(zone);
-        System.out.println("Zone est ajoutée avec succès");
+        //System.out.println("Zone est ajoutée avec succès");
 
     }
 
@@ -460,7 +460,9 @@ public class SecurityService {
         accesLog.add(log);
     };
 
-    /********************************* Rapport ************************/
+    /********************************* 
+     * Rapport 
+     *************************/
 
     // Calcule du teaux de refus
     public double calculerTauxRefus() {
@@ -711,7 +713,9 @@ public class SecurityService {
     }
 
 
-    // ************************* Les Methodes d'affichage ****************************
+    /************************* 
+     * Les Methodes d'affichage
+     ****************************/
     
     public void afficherUtilisateur(UtilisateurCAN utilisateur){
         if (utilisateur == null){
@@ -723,7 +727,10 @@ public class SecurityService {
         System.out.println("+ Nom : " + utilisateur.getNom());
         System.out.println("+ Categorie : " + utilisateur.getCategorie());
         System.out.println("+ Niveau d'accés : " + utilisateur.getNiveauAcces());
-        System.out.println("+ Badge : " + utilisateur.badge.getNumeroBadge());
+        if(utilisateur.getBadge() != null) {
+            System.out.println("+ Badge : " + utilisateur.badge.getNumeroBadge());
+
+        }
     }
 
     public void afficherBadge(Badge badge){
@@ -771,7 +778,7 @@ public class SecurityService {
     }
 
     public void initialiserDonnesTest(){
-        SecurityService service = new SecurityService();
+
         try {
             // les utilisateur
             Spectateur s1 = new Spectateur("Mohammed Ali", CategorieSpectateur.TRIBUNE_POPULAIRE);
@@ -802,33 +809,33 @@ public class SecurityService {
             VIP v6 = new VIP("Laila Ouarak", CategorieVIP.DELEGATION_OFFICIELLE);
             VIP v7 = new VIP("Driss Belahj", CategorieVIP.FIFA_CAF);
 
-            service.ajouterUtilisateur(s1);
-            service.ajouterUtilisateur(s2);
-            service.ajouterUtilisateur(s3);
-            service.ajouterUtilisateur(s4);
-            service.ajouterUtilisateur(s5);
-            service.ajouterUtilisateur(s6);
-            service.ajouterUtilisateur(s7);
-            service.ajouterUtilisateur(s8);
-            service.ajouterUtilisateur(s9);
-            service.ajouterUtilisateur(s10);
+            ajouterUtilisateur(s1);
+            ajouterUtilisateur(s2);
+            ajouterUtilisateur(s3);
+            ajouterUtilisateur(s4);
+            ajouterUtilisateur(s5);
+            ajouterUtilisateur(s6);
+            ajouterUtilisateur(s7);
+            ajouterUtilisateur(s8);
+            ajouterUtilisateur(s9);
+            ajouterUtilisateur(s10);
 
-            service.ajouterUtilisateur(st1);
-            service.ajouterUtilisateur(st2);
-            service.ajouterUtilisateur(st3);
-            service.ajouterUtilisateur(st4);
-            service.ajouterUtilisateur(st5);
-            service.ajouterUtilisateur(st6);
-            service.ajouterUtilisateur(st7);
-            service.ajouterUtilisateur(st8);
+            ajouterUtilisateur(st1);
+            ajouterUtilisateur(st2);
+            ajouterUtilisateur(st3);
+            ajouterUtilisateur(st4);
+            ajouterUtilisateur(st5);
+            ajouterUtilisateur(st6);
+            ajouterUtilisateur(st7);
+            ajouterUtilisateur(st8);
 
-            service.ajouterUtilisateur(v1);
-            service.ajouterUtilisateur(v2);
-            service.ajouterUtilisateur(v3);
-            service.ajouterUtilisateur(v4);
-            service.ajouterUtilisateur(v5);
-            service.ajouterUtilisateur(v6);
-            service.ajouterUtilisateur(v7);
+            ajouterUtilisateur(v1);
+            ajouterUtilisateur(v2);
+            ajouterUtilisateur(v3);
+            ajouterUtilisateur(v4);
+            ajouterUtilisateur(v5);
+            ajouterUtilisateur(v6);
+            ajouterUtilisateur(v7);
 
 
             //Les zone
@@ -841,14 +848,14 @@ public class SecurityService {
             ZoneSecurisee z7 = new ZoneSecurisee("Zone VIP", 3);
             ZoneSecurisee z8 = new ZoneSecurisee("Salle De Contrôle", 3);
 
-            service.ajouterZone(z1);
-            service.ajouterZone(z2);
-            service.ajouterZone(z3);
-            service.ajouterZone(z4);
-            service.ajouterZone(z5);
-            service.ajouterZone(z6);
-            service.ajouterZone(z7);
-            service.ajouterZone(z8);
+            ajouterZone(z1);
+            ajouterZone(z2);
+            ajouterZone(z3);
+            ajouterZone(z4);
+            ajouterZone(z5);
+            ajouterZone(z6);
+            ajouterZone(z7);
+            ajouterZone(z8);
 
             for(UtilisateurCAN utilisateur : utilisateurs){
                 genererBadge(utilisateur, LocalDate.now().minusDays(5), LocalDate.now().plusDays(10));
@@ -989,7 +996,7 @@ public class SecurityService {
 
     /********************************* 
      * Validation & Exception Handling
-     ****************************** */
+     *******************************/
 
     public void validerDonneesUtilisateur(String nom, String categorie) throws DonneeInvalideException{
         if(nom == null || nom.isEmpty() || nom.isBlank()) {

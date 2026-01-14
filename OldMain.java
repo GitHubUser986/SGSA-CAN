@@ -1,7 +1,6 @@
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import enums.Categorie;
 import enums.CategorieSpectateur;
 import enums.CategorieStaff;
 import enums.CategorieVIP;

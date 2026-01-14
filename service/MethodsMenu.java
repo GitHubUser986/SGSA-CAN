@@ -23,7 +23,7 @@ public class MethodsMenu {
     public SecurityService service = new SecurityService();
 
     public MethodsMenu() {
-        
+        service.initialiserDonnesTest();
     }
 
     public void methodsMenuAjout(int operation) throws DonneeInvalideException{
@@ -35,9 +35,11 @@ public class MethodsMenu {
                     String nom = sc.nextLine();
                     System.out.println("Cet utilisateur est-il (1: Spectateur, 2: Staff, 3: VIP)?");
                     int categorie = sc.nextInt();
+                sc.nextLine();
                     if(categorie == 1) {
                         System.out.println("Quelle est sa catégorie : (1: Tribune populaire, 2: Tribune VIP, 3: Gradin nord, 4: Gradin sud)");
                         int categorieSpectateur = sc.nextInt();
+                sc.nextLine();
                         if(categorieSpectateur == 1) {
                             Spectateur user = new Spectateur(nom,CategorieSpectateur.TRIBUNE_POPULAIRE);
                             service.ajouterUtilisateur(user);
@@ -60,6 +62,7 @@ public class MethodsMenu {
                     } else if(categorie == 2){
                          System.out.println("Quelle est sa catégorie : (1: Sécurité, 2: Médicale, 3: Technique, 4: Accueil, 5: Maintenance, 6: Restauration, 7: Media)");
                         int categorieStaff = sc.nextInt();
+                sc.nextLine();
                         if(categorieStaff == 1) {
                             Staff user = new Staff(nom,CategorieStaff.SECURITE);
                             service.ajouterUtilisateur(user);
@@ -93,6 +96,7 @@ public class MethodsMenu {
                     } else if(categorie == 3) {
                         System.out.println("Quelle est sa catégorie : (1: Présidentiel, 2: Délegation officielle, 3: Sponsores, 4: FIFA CAF, 5: Ambassadeurs, 6: Celebrity, 7: Presse Internationale)");
                         int categorieVIP = sc.nextInt();
+                sc.nextLine();
                         if(categorieVIP == 1) {
                             VIP user = new VIP(nom,CategorieVIP.PRESIDENTIEL);
                             service.ajouterUtilisateur(user);
@@ -135,6 +139,7 @@ public class MethodsMenu {
                 String nomZone = sc.nextLine();
                 System.out.println("Entrez le niveau requis à entrer cette zone : (1: Spectateur, 2: Staff, 3: VIP)");
                 int niveau = sc.nextInt();
+                sc.nextLine();
                 ZoneSecurisee zone = new ZoneSecurisee(nomZone, niveau);
                 service.afficherZone(zone);
                 break;
@@ -142,11 +147,12 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrez l'identifiant de l'utilisateur : ");
                     int id = sc.nextInt();
+                sc.nextLine();
                     UtilisateurCAN user = service.rechercherPadId(id);
-                    System.out.println("Entrez la date de début de validation de ce badge ");
+                    System.out.println("Entrez la date de début de validation de ce badge (YYYY-MM-DD)");
                     String dateInput = sc.nextLine();
                     LocalDate debut = LocalDate.parse(dateInput);
-                    System.out.println("Entrez la date de fin de validation de ce badge ");
+                    System.out.println("Entrez la date de fin de validation de ce badge (YYYY-MM-DD)");
                     dateInput = sc.nextLine();
                     LocalDate fin = LocalDate.parse(dateInput);
                     service.genererBadge(user, debut, fin);
@@ -158,7 +164,7 @@ public class MethodsMenu {
                 System.out.println("Option incorrecte");
                 break;
         }
-        sc.close();
+        
     }
 
     public void methodsMenuAffichage(int operation) throws DonneeInvalideException, ZoneInterditeException{
@@ -169,28 +175,51 @@ public class MethodsMenu {
                 break;
             case 2:
                 try {
-                    service.listerZones();
+                    ArrayList<ZoneSecurisee> zones = service.listerZones();
+                    for (ZoneSecurisee z : zones) {
+                        System.out.println("\nNum : "+ z.getIdZone());
+                        System.out.println("Zone : "+ z.getNomZone());
+                        System.out.println("Niveau requis : "+ z.getDescriptionNiveauRequis(z.getNiveauRequis()));
+                    }
                 } catch (DonneeInvalideException e) {
                     
                 }
                 break;
             case 3:
                 try {
-                    service.listerBadgesActifs();
+                    ArrayList<Badge> badges =  service.listerBadgesActifs();
+                    for (Badge badge : badges) {
+                        System.out.println("\nBadge N° : "+ badge.getNumeroBadge());
+                        System.out.println("Utilisateur : "+ badge.getUtilisateur().getNom());
+                        System.out.println("Statut : "+badge.getStatut());
+                        System.out.println("Durée de valdité : ["+ badge.getDateDebut() + " - "+ badge.getDateFin() + "]");
+                    }
                 } catch (DonneeInvalideException e) {
                     
                 }
                 break;
             case 4:
                 try {
-                    service.listerBadgesBloques();
+                    ArrayList<Badge> badges =  service.listerBadgesBloques();
+                    for (Badge badge : badges) {
+                        System.out.println("\nBadge N° : "+ badge.getNumeroBadge());
+                        System.out.println("Utilisateur : "+ badge.getUtilisateur().getNom());
+                        System.out.println("Statut : "+badge.getStatut());
+                        System.out.println("Durée de valdité : ["+ badge.getDateDebut() + " - "+ badge.getDateFin() + "]");
+                    }
                 } catch (DonneeInvalideException e) {
                     
                 }
                 break;
             case 5:
                 try {
-                    service.listerBadgesExpires();
+                    ArrayList<Badge> badges =  service.listerBadgesExpires();
+                    for (Badge badge : badges) {
+                        System.out.println("\nBadge N° : "+ badge.getNumeroBadge());
+                        System.out.println("Utilisateur : "+ badge.getUtilisateur().getNom());
+                        System.out.println("Statut : "+badge.getStatut());
+                        System.out.println("Durée de valdité : ["+ badge.getDateDebut() + " - "+ badge.getDateFin() + "]");
+                    }
                 } catch (DonneeInvalideException e) {
                     
                 }
@@ -198,6 +227,7 @@ public class MethodsMenu {
             case 6: 
                 System.out.println("Entrez l'identifiant de l'utilisateur : ");
                 int id = sc.nextInt();
+                sc.nextLine();
                 ArrayList<AccesLog> userLogs = service.listerAccesParUtilisateur(id);
                 for (AccesLog accesLog : userLogs) {
                     System.out.println("Zone : "+ accesLog.getZone() + " Résultat : "+ accesLog.getResultat());
@@ -205,7 +235,7 @@ public class MethodsMenu {
                 break;
             case 7: 
                 try {
-                    System.out.println("Entrez la date : ");
+                    System.out.println("Entrez la date : (YYYY-MM-DD)");
                     String dateInput = sc.nextLine();
                     LocalDate date = LocalDate.parse(dateInput);
                     ArrayList<AccesLog> dateLogs = service.listerAccesParDate(date);
@@ -233,6 +263,7 @@ public class MethodsMenu {
                 try {
                 System.out.println("Entrez le numero de badge : ");
                 int numeroBadge = sc.nextInt();
+                sc.nextLine();
                 ArrayList<AccesLog> badgeLogs = service.listerAccesParBadge(numeroBadge);
                 for (AccesLog accesLog : badgeLogs) {
                     System.out.println("Zone : "+ accesLog.getZone().getNomZone() + " Résultat : "+accesLog.getResultat());
@@ -254,6 +285,7 @@ public class MethodsMenu {
             case  11:
                 System.out.println("Entrez l'identifiant de l'utilisateur : ");
                 int idUser = sc.nextInt();
+                sc.nextLine();
                 UtilisateurCAN user = service.rechercherPadId(idUser);
                 service.afficherUtilisateur(user);
                 break;
@@ -261,6 +293,7 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrez le numero de badge : ");
                     int numeroBadge = sc.nextInt();
+                sc.nextLine();
                     Badge badge = service.rechercherParBadge(numeroBadge);
                     service.afficherBadge(badge);
                 } catch (BadgeInvalideException e) {
@@ -282,7 +315,7 @@ public class MethodsMenu {
                 break;
 
         }
-        sc.close();
+        
     }
 
     public void methodsMenuTri(int operation) throws DonneeInvalideException{
@@ -321,6 +354,7 @@ public class MethodsMenu {
             case 2:
                 System.out.println("Entrer le numéro : ");
                 int id = sc.nextInt();
+                sc.nextLine();
                 service.rechercherPadId(id);
                 break;
             case 3:
@@ -336,6 +370,7 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer le numéro : ");
                     int idZone = sc.nextInt();
+                sc.nextLine();
                     service.rechercherZoneParId(idZone);
                 } catch (ZoneInterditeException e) {
                     
@@ -345,6 +380,7 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer le numéro : ");
                     int idBadge = sc.nextInt();
+                sc.nextLine();
                     service.rechercherParBadge(idBadge);
                 } catch (BadgeInvalideException e) {
                     
@@ -354,7 +390,7 @@ public class MethodsMenu {
                 System.out.println("Option incorrecte");
                 break;
         }
-        sc.close();
+        
     }
 
     public void methodsMenuGerer(int operation) throws UnauthorizedException, BadgeInvalideException{
@@ -364,9 +400,11 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer votre id :");
                     int id = sc.nextInt();
+                sc.nextLine();
                     UtilisateurCAN user = service.rechercherPadId(id);
                     System.out.println("Entrer le numéro du badge à bloquer : ");
                     int numeroBadgeBloque = sc.nextInt();
+                sc.nextLine();
                     service.bloquerBadge(numeroBadgeBloque, user);
                 } catch (UnauthorizedException | BadgeInvalideException e) {
                     
@@ -376,9 +414,11 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer votre id :");
                     int idUser = sc.nextInt();
+                sc.nextLine();
                     UtilisateurCAN userAdmin = service.rechercherPadId(idUser);
                     System.out.println("Entrer le numéro du badge à bloquer : ");
                     int numeroBadgeDebloque = sc.nextInt();
+                sc.nextLine();
                     service.debloquerBadge(numeroBadgeDebloque, userAdmin);
                 } catch (UnauthorizedException | BadgeInvalideException e) {
                     
@@ -388,6 +428,7 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer le numéro de badge : ");
                     int numero = sc.nextInt();
+                sc.nextLine();
                     service.invaliderBadge(numero);
                 } catch (BadgeInvalideException e) {
                     
@@ -397,6 +438,7 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer le numéro de badge : ");
                     int idBadge = sc.nextInt();
+                sc.nextLine();
                     Badge badge = service.rechercherParBadge(idBadge);
                     service.verifierValiditeBadge(badge);
                 } catch (BadgeInvalideException e) {
@@ -407,6 +449,7 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer le numéro de badge : ");
                     int idBadge = sc.nextInt();
+                sc.nextLine();
                     System.out.println("Entrez le nom de la zone");
                     String nomZone = sc.nextLine();
                     boolean resutat = service.verfierAcces(idBadge, nomZone);
@@ -424,7 +467,7 @@ public class MethodsMenu {
                 System.out.println("Option incorrecte");
                 break;
         }
-        sc.close();
+        
     }
 
     public void methodsMenuAutres(int operation) throws DonneeInvalideException, ZoneInterditeException, UnauthorizedException{
@@ -451,6 +494,7 @@ public class MethodsMenu {
                     String nomZone = sc.nextLine();
                     System.out.println("Entrez le numéro de niveau : ");
                     int niveau = sc.nextInt();
+                sc.nextLine();
                     service.validerDonneesZone(nomZone, niveau);
                     
                 } catch (DonneeInvalideException | ZoneInterditeException e) {
@@ -459,10 +503,10 @@ public class MethodsMenu {
                 break;
             case 4: 
                 try {
-                    System.out.println("Entrez la de début : ");
+                    System.out.println("Entrez la date de début : (YYYY-MM-DD)");
                     String dateInput = sc.nextLine();
                     LocalDate debut = LocalDate.parse(dateInput);
-                    System.out.println("Entrez la date de fin : ");
+                    System.out.println("Entrez la date de fin : (YYYY-MM-DD)");
                     dateInput = sc.nextLine();
                     LocalDate fin = LocalDate.parse(dateInput);
                     service.validerDonneesBadge(debut, fin);
@@ -475,6 +519,7 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer votre id :");
                     int id = sc.nextInt();
+                sc.nextLine();
                     UtilisateurCAN user = service.rechercherPadId(id);
                     Staff staff = (Staff) user;
                     service.verifierDroitsBlocage(staff);
@@ -486,7 +531,7 @@ public class MethodsMenu {
                 System.out.println("Option incorrecte");
                 break;
         }
-        sc.close();
+        
     }
 
     public void methodsMenuRapports(int operation){

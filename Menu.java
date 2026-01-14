@@ -18,7 +18,7 @@ public class Menu {
         Scanner sc = new Scanner(System.in);
 
         do {
-            System.out.println("------------------------Menu------------------------");
+            System.out.println("========================Menu========================");
             System.out.println("1. Menu pour l'ajout");
             System.out.println("2. Menu pour l'affichage");
             System.out.println("3. Menu pour le tri");
@@ -32,11 +32,11 @@ public class Menu {
             switch (menu) {
                 case 1:
                     do {
-                        System.out.println("------------------------Ajout------------------------");
+                        System.out.println("========================Ajout========================");
                         System.out.println("1. Ajouter un utilisateur");
                         System.out.println("2. Ajouter une zone");
                         System.out.println("3. Générer un badge");
-                        System.out.println("0. Quitter le menu");
+                        System.out.println("0. Quitter le menu\n");
                         operation = sc.nextInt();
                         m.methodsMenuAjout(operation);
                     } while(operation != 0);
@@ -44,7 +44,7 @@ public class Menu {
                     break;
                 case 2:
                     do {
-                        System.out.println("----------------------Affichage----------------------");
+                        System.out.println("======================Affichage======================");
                         System.out.println("1. Liste des utilisateurs");
                         System.out.println("2. Liste des zones");
                         System.out.println("3. Liste des badges actifs");
@@ -58,7 +58,7 @@ public class Menu {
                         System.out.println("11. Afficher les données de l'utilisateur");
                         System.out.println("12. Afficher les données de badge");
                         System.out.println("13. Afficher les données de la zone");
-                        System.out.println("0. Quitter le menu");
+                        System.out.println("0. Quitter le menu\n");
                         operation = sc.nextInt();
                         m.methodsMenuAffichage(operation);
                     } while(operation != 0);
@@ -66,59 +66,59 @@ public class Menu {
                     break;
                 case 3:
                     do {
-                    System.out.println("-------------------------Tri-------------------------");
+                    System.out.println("=========================Tri=========================");
                     System.out.println("1. Trier les utilisateurs par nom");
                     System.out.println("2. Trier les zones par niveau");
                     System.out.println("3. Trier l'historique des accès par date");
-                    System.out.println("0. Quitter le menu");
+                    System.out.println("0. Quitter le menu\n");
                         operation = sc.nextInt();
                         m.methodsMenuTri(operation);
                     } while(operation != 0);
                     break;
                 case 4:
                      do {
-                        System.out.println("----------------------Recherche----------------------");
+                        System.out.println("======================Recherche======================");
                         System.out.println("1. Rechercher un utilisateur par son nom");
                         System.out.println("2. Rechercher un utilisateur par son numéro");
                         System.out.println("3. Rechercher une zone par son nom");
                         System.out.println("4. Rechercher une zone par son numéro");
                         System.out.println("5. Rechercher par numéro de badge");
-                        System.out.println("0. Quitter le menu");
+                        System.out.println("0. Quitter le menu\n");
                             operation = sc.nextInt();
                             m.methodsMenuRecherche(operation);
                         } while(operation != 0);
                     break;
                 case 5:
                      do {
-                        System.out.println("-------------------------Gérer------------------------");
+                        System.out.println("=========================Gérer========================");
                         System.out.println("1. Bloquer un badge");
                         System.out.println("2. Débloquer un badge");
                         System.out.println("3. Invalider un badge");
                         System.out.println("4. Vérifier la validité du badge");
                         System.out.println("5. Vérifier l'accès d'un badge vers une zone");
-                        System.out.println("0. Quitter le menu");
+                        System.out.println("0. Quitter le menu\n");
                         operation = sc.nextInt();
                         m.methodsMenuGerer(operation);
                         } while(operation != 0);
                     break;
                 case 6:
                      do {
-                        System.out.println("-------------------------Autres------------------------");
+                        System.out.println("=========================Autres========================");
                         System.out.println("1. Compter utilisateur par type (Spectateur, Staff, VIP)");
                         System.out.println("2. Valider les données de l'utilisateur");
                         System.out.println("3. Valider les données de la zone");
                         System.out.println("4. Valider les dates du badge");
                         System.out.println("5. Vérifier les droits de blocage d'un staff");
-                        System.out.println("0. Quitter le menu");
+                        System.out.println("0. Quitter le menu\n");
                         operation = sc.nextInt();
                         m.methodsMenuAutres(operation);
                         } while(operation != 0);
                     break;
                 case 7:
                      do {
-                        System.out.println("----------------Rapport et Statistiques----------------");
+                        System.out.println("================Rapport et Statistiques================");
                         System.out.println("1. Générer un rapport complet");
-                        System.out.println("0. Quitter le menu");
+                        System.out.println("0. Quitter le menu\n");
                         operation = sc.nextInt();
                         m.methodsMenuRapports(operation);
                         } while(operation != 0);
@@ -130,7 +130,7 @@ public class Menu {
             }
         } while(menu != 0);
 
-        sc.close();
+        
     }
 
 }
