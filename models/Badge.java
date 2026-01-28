@@ -40,7 +40,11 @@ public class Badge implements Accreditable{
 
     @Override 
     public boolean estBadgeValide(){
-        return true;
+        if(this.statut == Statut.ACTIF){
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

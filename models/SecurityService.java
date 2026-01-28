@@ -45,6 +45,12 @@ public class SecurityService {
             exception.nomvide();
             throw exception;
         }
+
+        if(utilisateur.getNom().trim().length() < 2){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomLength();
+            throw exception;
+        }
         utilisateurs.add(utilisateur);
         //System.out.println("Utilisateur ajouté!");
     }
@@ -134,6 +140,12 @@ public class SecurityService {
             throw exception;
         }
 
+        if(zone.getNomZone().trim().length() < 2){
+            DonneeInvalideException exception = new DonneeInvalideException();
+            exception.nomLength();
+            throw exception;
+        }
+
         zones.add(zone);
         //System.out.println("Zone est ajoutée avec succès");
 
@@ -142,7 +154,7 @@ public class SecurityService {
     // rechercher zone par nom
     public ZoneSecurisee rechercherZone(String nom) throws ZoneInterditeException {
         for (ZoneSecurisee zoneSecurisee : zones) {
-            if (zoneSecurisee.getNomZone().equals(nom)) {
+            if (zoneSecurisee.getNomZone().equalsIgnoreCase(nom)) {
                 return zoneSecurisee;
             }
         }
@@ -208,7 +220,7 @@ public class SecurityService {
                 System.out.println("L'utilisateur a un badge bloqué et pas encore expiré, impossible de générer un nouveau badge");
                 return badgeExistant;
             }
-            
+
             System.out.println("L'utilisateur a un badge bloqué, impossible de générer un nouveau badge");
             return badgeExistant;
         }
@@ -650,7 +662,7 @@ public class SecurityService {
             }
         }
         System.out.println("Badge actifs : " + actif);
-        System.out.println("Badges expirés : " + inactif);
+        System.out.println("Badges inactifs : " + inactif);
         System.out.println("Badges bloqués : " + bloques);
         System.out.println("Badges expirés : " + expires);
 
@@ -667,9 +679,9 @@ public class SecurityService {
             else if (utilisateur instanceof VIP)
                 vip++;
         }
-        System.out.println(" + Le nombre totatl des spectateurs : " + spectateur);
+        System.out.println(" + Le nombre total des spectateurs : " + spectateur);
         System.out.println(" + Le nombre total des staff : " + staff);
-        System.out.println(" + Le nombre total des des VIP : " + vip);
+        System.out.println(" + Le nombre total des VIP : " + vip);
 
         System.out.println("\n------ La totalités des accès ------");
         int totalSucces = 0;
@@ -859,14 +871,14 @@ public class SecurityService {
 
 
             //Les zone
-            ZoneSecurisee z1 = new ZoneSecurisee("Entée Générale", 1);
+            ZoneSecurisee z1 = new ZoneSecurisee("Entree Generale", 1);
             ZoneSecurisee z2 = new ZoneSecurisee("Tibune", 1);
             ZoneSecurisee z3 = new ZoneSecurisee("Vestiaire", 2);
             ZoneSecurisee z4 = new ZoneSecurisee("Salle Presse", 2);
             ZoneSecurisee z5 = new ZoneSecurisee("Zone Staff", 2);
             ZoneSecurisee z6 = new ZoneSecurisee("Salle serveurs", 1);
             ZoneSecurisee z7 = new ZoneSecurisee("Zone VIP", 3);
-            ZoneSecurisee z8 = new ZoneSecurisee("Salle De Contrôle", 3);
+            ZoneSecurisee z8 = new ZoneSecurisee("Salle De Controle", 3);
 
             ajouterZone(z1);
             ajouterZone(z2);
@@ -877,8 +889,18 @@ public class SecurityService {
             ajouterZone(z7);
             ajouterZone(z8);
 
+            int count = 0;
+            LocalDate dateDebut = LocalDate.of(2026, 1, 1);
+
             for(UtilisateurCAN utilisateur : utilisateurs){
-                genererBadge(utilisateur, LocalDate.now().minusDays(5), LocalDate.now().plusDays(10));
+                if(count >= 16 && count <= 20){
+                    genererBadge(utilisateur,dateDebut, LocalDate.now().minusDays(6));
+                    count++;
+                } else {
+                    genererBadge(utilisateur, LocalDate.now().minusDays(5), LocalDate.now().plusDays(10));
+                    count++;
+                    
+                }
             }
         } catch (Exception e) {
             System.out.println("Erreur lor de l\'initialisation");
@@ -1025,7 +1047,7 @@ public class SecurityService {
             throw exception;
         }
 
-        if(nom.length() < 2){
+        if(nom.trim().length() < 2){
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.nomLength();
             throw exception;
@@ -1051,7 +1073,7 @@ public class SecurityService {
             throw exception;
         }
 
-        if(nom.length() < 2){
+        if(nom.trim().length() < 2){
             DonneeInvalideException exception = new DonneeInvalideException();
             exception.nomLength();
             throw exception;

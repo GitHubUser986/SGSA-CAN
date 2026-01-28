@@ -161,7 +161,9 @@ public class MethodsMenu {
                 }
                 break;
             default : 
-                System.out.println("Option incorrecte");
+                if(operation != 0) {
+                    System.out.println("Option incorrecte");
+                }
                 break;
         }
         
@@ -179,7 +181,7 @@ public class MethodsMenu {
                     for (ZoneSecurisee z : zones) {
                         System.out.println("\nNum : "+ z.getIdZone());
                         System.out.println("Zone : "+ z.getNomZone());
-                        System.out.println("Niveau requis : "+ z.getDescriptionNiveauRequis(z.getNiveauRequis()));
+                        System.out.println(z.getDescriptionNiveauRequis(z.getNiveauRequis()));
                     }
                 } catch (DonneeInvalideException e) {
                     
@@ -311,7 +313,9 @@ public class MethodsMenu {
                 }
                 break;
             default:
-                System.out.println("Option incorrecte");
+                if(operation != 0) {
+                    System.out.println("Option incorrecte");
+                }
                 break;
 
         }
@@ -338,7 +342,9 @@ public class MethodsMenu {
                 }
                 break;
             default:
-                System.out.println("Option incorrecte");
+                if(operation != 0) {
+                    System.out.println("Option incorrecte");
+                }
                 break;
         }
     }
@@ -387,7 +393,9 @@ public class MethodsMenu {
                 }
                 break;
             default:
-                System.out.println("Option incorrecte");
+                if(operation != 0) {
+                    System.out.println("Option incorrecte");
+                }
                 break;
         }
         
@@ -449,7 +457,7 @@ public class MethodsMenu {
                 try {
                     System.out.println("Entrer le numéro de badge : ");
                     int idBadge = sc.nextInt();
-                sc.nextLine();
+                    sc.nextLine();
                     System.out.println("Entrez le nom de la zone");
                     String nomZone = sc.nextLine();
                     boolean resutat = service.verfierAcces(idBadge, nomZone);
@@ -464,7 +472,9 @@ public class MethodsMenu {
                 }
                 break;
             default:
-                System.out.println("Option incorrecte");
+                if(operation != 0) {
+                    System.out.println("Option incorrecte");
+                }
                 break;
         }
         
@@ -528,7 +538,9 @@ public class MethodsMenu {
                 }
                 break;
             default:
-                System.out.println("Option incorrecte");
+                if(operation != 0) {
+                    System.out.println("Option incorrecte");
+                }
                 break;
         }
         
@@ -541,7 +553,9 @@ public class MethodsMenu {
                 break;
         
             default:
-                System.out.println("Option incorrecte");
+                if(operation != 0) {
+                    System.out.println("Option incorrecte");
+                }
                 break;
         }
     }

@@ -125,7 +125,9 @@ public class Menu {
                     break;
             
                 default:
-                    System.out.println("Cette option est introuvable");
+                    if(menu != 0) {
+                        System.out.println("Option incorrecte");
+                    }
                     break;
             }
         } while(menu != 0);
