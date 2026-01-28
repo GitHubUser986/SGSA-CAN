@@ -198,6 +198,26 @@ public class SecurityService {
             exception.dateInvalide();
             throw exception;
         }
+
+        LocalDate today = LocalDate.now();
+        Badge badgeExistant = user.getBadge();
+
+        if(badgeExistant != null && badgeExistant.getStatut().equals(Statut.BLOQUE)){
+
+            if (badgeExistant.getDateFin().isAfter(today)){
+                System.out.println("L'utilisateur a un badge bloqué et pas encore expiré, impossible de générer un nouveau badge");
+                return badgeExistant;
+            }
+            
+            System.out.println("L'utilisateur a un badge bloqué, impossible de générer un nouveau badge");
+            return badgeExistant;
+        }
+
+        if (badgeExistant != null) {
+            System.out.println("L'utilisateur a déjà un badge attribué");
+            return badgeExistant;
+        }
+
         Badge badge = new Badge(user, debut, fin);
         badges.add(badge);
         return badge;
